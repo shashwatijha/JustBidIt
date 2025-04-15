@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+
+# Flask cache
+instance/
+*.db
+*.sqlite3
+
+# Node / React
+node_modules/
+build/
+dist/
+.env
+
+# macOS
+.DS_Store
+
+# Logs
+*.log

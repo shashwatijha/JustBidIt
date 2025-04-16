@@ -61,10 +61,15 @@ pip install -r requirements.txt
 cd server
 python server.py
 ```
-
+```to run the reactjs
+    npm install
+    npm start
+```
 Server will run on: [http://localhost:8000](http://localhost:8000)
 
 ---
+
+
 
 ### 7. Set Up MySQL Database
 

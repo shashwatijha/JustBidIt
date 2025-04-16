@@ -18,8 +18,8 @@ git clone https://github.com/shashwatijha/oas.git
 ### 2. Install Required Tools
 
 - [VS Code](https://code.visualstudio.com/)
+- [MySQL Server (Windows)](https://dev.mysql.com/downloads/windows/installer/8.0.html)
 - [MySQL Workbench](https://dev.mysql.com/downloads/workbench/)
-
 ---
 
 ### 3. Open the Project in VS Code

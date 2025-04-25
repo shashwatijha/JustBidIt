@@ -1,0 +1,104 @@
+.login-container {
+  display: flex;
+  height: 100vh;
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+.login-left {
+  flex: 1;
+  background-color: #0058a3;
+  color: white;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-left .logo {
+  width: 100px;
+  margin-bottom: 2rem;
+}
+
+.login-left h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.highlight {
+  color: #ffd200;
+  font-weight: bold;
+}
+
+.login-right {
+  flex: 1;
+  padding: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fefefe;
+}
+
+form {
+  width: 100%;
+  max-width: 400px;
+}
+
+form label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+form input[type="text"],
+form input[type="password"] {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.row-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.link {
+  font-size: 0.9rem;
+  color: #0058a3;
+  text-decoration: none;
+}
+
+.login-button {
+  margin-top: 1.5rem;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #0058a3;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.outline-button {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #0058a3;
+  background: none;
+  color: #0058a3;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.divider {
+  margin: 1.5rem 0;
+  border-top: 1px solid #ccc;
+}

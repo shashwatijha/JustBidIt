@@ -55,3 +55,56 @@ def create_product():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+@product_bp.route('/api/products', methods=['GET'])
+def get_products():
+    try:
+        products = Product.query.all()
+        result = []
+
+        for product in products:
+            result.append({
+                "id": product.id,
+                "name": product.name,
+                "price": product.price,
+                "brand": product.brand,
+                "storage": product.storage,
+                "ram": product.ram,
+                "color": product.color,
+                "screen_size": product.screen_size,
+                "reserve_price": product.reserve_price,
+                "closing_date": product.closing_date.strftime('%Y-%m-%d %H:%M:%S'),
+                "image_url": f"http://localhost:8000/uploads/{product.image_filename}"
+            })
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@product_bp.route('/api/product', methods=['GET'])
+def get_product_by_id():
+    product_id = request.args.get('id')
+    if not product_id:
+        return jsonify({"error": "Missing product ID"}), 400
+
+    product = Product.query.get(product_id)
+
+    if not product:
+        return jsonify({"error": "Product not found"}), 404
+
+    result = {
+        "id": product.id,
+        "name": product.name,
+        "price": product.price,
+        "brand": product.brand,
+        "storage": product.storage,
+        "ram": product.ram,
+        "color": product.color,
+        "screen_size": product.screen_size,
+        "reserve_price": product.reserve_price,
+        "closing_date": product.closing_date.strftime('%Y-%m-%d %H:%M:%S'),
+        "image_url": f"http://localhost:8000/uploads/{product.image_filename}"
+    }
+
+    return jsonify(result), 200
+

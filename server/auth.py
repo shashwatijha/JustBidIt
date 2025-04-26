@@ -8,7 +8,6 @@ auth_bp = Blueprint('auth', __name__)
 
 class User(db.Model):
     __tablename__ = 'users'
-
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), nullable=False, unique=True)
     username = db.Column(db.String(100), nullable=False, unique=True)
@@ -77,20 +76,17 @@ def signup():
     if User.query.filter_by(email=email).first() or User.query.filter_by(username=username).first():
         return jsonify({"status": "error", "message": "Email or username already exists"}), 400
 
-    # Hash the password
-    hashed_password = generate_password_hash(password)
-    print("SIGNUP DATA:", data)
-
     # Create a new user
     new_user = User(
     email=email,
     username=username,
-    password=hashed_password,
+    password=password,
     account_type=account_type,
     full_name=full_name,
     business_name=business_name,
     country=country
 )
+
     db.session.add(new_user)
     db.session.commit()
 

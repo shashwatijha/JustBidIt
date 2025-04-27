@@ -61,7 +61,7 @@ def signup():
     country = data.get("country")
     full_name = data.get("fullName") if account_type == "personal" else None
     business_name = data.get("businessName") if account_type == "business" else None
-
+    
     print("Received POST to /signup")
     print("Request JSON:", request.json)
 
@@ -78,14 +78,14 @@ def signup():
 
     # Create a new user
     new_user = User(
-    email=email,
-    username=username,
-    password=password,
-    account_type=account_type,
-    full_name=full_name,
-    business_name=business_name,
-    country=country
-)
+        email=email,
+        username=username,
+        password=password,
+        account_type=account_type,
+        full_name=full_name,
+        business_name=business_name,
+        country=country
+    )
 
     db.session.add(new_user)
     db.session.commit()

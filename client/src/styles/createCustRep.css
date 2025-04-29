@@ -1,0 +1,113 @@
+.form-wrapper {
+    max-width: 600px;
+    margin: 0 auto;                    /* Center horizontally */
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    display: inline-flex;
+  }
+  
+  .form-wrapper h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+    color: #003399;
+    text-align: center;
+  }
+  
+  .admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;                        /* spacing between fields */
+  }
+  
+  .admin-form input {
+    padding: 0.85rem 1rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .admin-form button {
+    padding: 0.85rem;
+    background-color: #003399;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+  }
+  
+  .admin-form button:hover {
+    background-color: #002266;
+  }
+  
+  .form-message {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    text-align: center;
+  }
+  
+  .form-message.success {
+    background-color: #e0f5e0;
+    color: #2d662d;
+    border: 1px solid #a6d8a6;
+  }
+  
+  .form-message.error {
+    background-color: #fde4e4;
+    color: #a33;
+    border: 1px solid #f3b6b6;
+  }
+
+  .reset-container {
+    display: flex;
+    height: 100%;
+    min-height: 80vh;
+  }
+  
+  .reset-sidebar {
+    width: 250px;
+    background-color: #f1f1f1;
+    padding: 1.5rem;
+    border-right: 1px solid #ddd;
+  }
+  
+  .reset-sidebar h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #003399;
+  }
+  
+  .reset-sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .reset-sidebar li {
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    transition: background 0.2s;
+  }
+  
+  .reset-sidebar li:hover {
+    background-color: #dbe9ff;
+  }
+
+  .no-requests {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #777;
+    padding: 2rem;
+  }
+  
+  
+  

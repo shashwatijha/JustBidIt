@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../styles/login.css';
 
 function Login() {
-  
+
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -82,6 +82,9 @@ function Login() {
           <button className="outline-button">
             <Link to="/signup" className="link-button">Create Account</Link>
           </button>
+          <p className="admin-login-link">
+            <Link to="/admin-login" className="link">Login as Admin</Link>
+          </p>
           <p className="login-message">{msg}</p>
         </form>
       </div>

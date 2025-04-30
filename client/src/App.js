@@ -1,36 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Auth from './views/auth';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from './views/login';
 import Signup from './views/signup';
 import ProductForm from "./views/ProductForm";
 import ProductList from "./views/ProductList";
 import ProductDetail from './views/ProductDetail';
 import BidForm from "./views/BidForm";
+import AdminLogin from './views/adminLogin';
+import AdminDashboard from './views/adminDashboard';
+import CreateCustomerRep from './views/createCustRep';
+import SalesReport from './views/salesReport';
+import ForgotRepPassword from './views/forgotRepPassword';
+import CustomerRepDashboard from './views/custRepDashboard';
 
 function App() {
   const [dbStatus, setDbStatus] = useState(null);
-
-  useEffect(() => {
-    fetch("/test-db")
-      .then(res => res.json())
-      .then(data => setDbStatus(data.message))
-      .catch(() => setDbStatus("Connection failed"));
-  }, []);
 
   return (
     <Router>
       <div>
         <Routes>
-          {/* <Auth /> */}
+          {/* User routes */}
           <Route path="/" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/products" element={<ProductList />} />
           <Route path="/product" element={<ProductDetail />} />
           <Route path="/create" element={<ProductForm />} />
           <Route path="/bid" element={<BidForm />} />
-          {/* <Route path="/" element={<Auth />} /> */}
-          
+
+          {/* Admin routes */}
+          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/create-customer-rep" element={<CreateCustomerRep />} />
+          <Route path="/sales-report" element={<SalesReport />} />
+          <Route path="/forgot-rep-password" element={<ForgotRepPassword />} />
+
+          {/* Customer Rep routes */}
+          <Route path="/customer-rep-login" element={<Login />} />
+          <Route path="/customer-rep-dashboard" element={<CustomerRepDashboard />} />
         </Routes>
       </div>
     </Router>

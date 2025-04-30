@@ -1,0 +1,91 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f6f9;
+}
+
+.ikea-login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to bottom right, #0058A3, #0079c1);
+}
+
+.ikea-login-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    padding: 2rem 2.5rem;
+    width: 350px;
+    text-align: center;
+}
+
+.ikea-login-title {
+    color: #0058A3;
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
+}
+
+.ikea-login-subtitle {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.ikea-login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.ikea-login-form input {
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.ikea-login-form button {
+    background-color: #F7D117;
+    color: #0058A3;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.ikea-login-form button:hover {
+    background-color: #ffdf2b;
+}
+
+.ikea-login-error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.forgot-link,
+.back-link {
+    font-size: 0.85rem;
+    color: #0058A3;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 5px;
+    transition: color 0.2s;
+}
+
+.forgot-link:hover,
+.back-link:hover {
+    color: #003f73;
+    text-decoration: underline;
+}
+
+.extra-links {
+    text-align: center;
+    margin-top: 10px;
+}

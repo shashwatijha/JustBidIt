@@ -14,6 +14,8 @@ import CreateCustomerRep from './views/createCustRep';
 import SalesReport from './views/salesReport';
 import ForgotRepPassword from './views/forgotRepPassword';
 import CustomerRepDashboard from './views/custRepDashboard';
+import ForgotPassword from './views/forgotPassword';
+import ResetPassword from './views/resetPassword';
 
 function App() {
   const [dbStatus, setDbStatus] = useState(null);
@@ -24,13 +26,16 @@ function App() {
         <Routes>
           {/* User routes */}
           <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/products" element={<ProductList />} />
           <Route path="/product" element={<ProductDetail />} />
           <Route path="/create" element={<ProductForm />} />
           <Route path="/bid" element={<BidForm />} />
           <Route path="/faq" element={<QASection />} />
-          
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+
 
           {/* Admin routes */}
           <Route path="/admin-login" element={<AdminLogin />} />

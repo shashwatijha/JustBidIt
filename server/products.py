@@ -117,3 +117,35 @@ def get_product_by_id():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+from datetime import datetime
+
+# @product_bp.route('/api/winner', methods=['GET'])
+# def get_auction_winner():
+#     product_id = request.args.get('id')
+
+#     product = Product.query.get(product_id)
+
+
+#     if datetime.utcnow() < product.closing_date:
+#         return
+
+#     create_notification(
+#         user_id=winner_user_id,
+#         message=f"Congratulations! You have won the auction for product ID {product_id}.",
+#         notif_type='winner'
+#         )
+        
+#     if product.bid_price and product.user_id:
+#         return jsonify({
+#             "winner_user_id": int(product.user_id),
+#             "winning_bid": round(product.bid_price, 2),
+#             "product_id": product.id,
+#             "product_name": product.name
+#         }), 200
+    
+    
+
+#     else:
+#         return jsonify({"message": "No bids were placed for this product"}), 200
+

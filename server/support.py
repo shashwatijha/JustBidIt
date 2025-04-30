@@ -132,4 +132,36 @@ def delete_bid(bid_id):
     except Exception as e:
         print("DELETE BID ERROR:", e)
         return jsonify({"status": "error", "message": str(e)}), 500
+# TEMP FAQ list for testing
+faq_list = []
+
+# Mock: Create FAQ
+@support_bp.route('/faq/create', methods=['POST'])
+def create_faq():
+    data = request.get_json()
+    question = data.get('question')
+    user_id = data.get('user_id')
+
+    if not question or not user_id:
+        return jsonify({"status": "error", "message": "Missing fields"}), 400
+
+    # Simulate adding to DB
+    faq = {
+        "id": len(faq_list) + 1,
+        "question": question,
+        "answer": None,
+        "user_id": user_id,
+        "status": "pending"
+    }
+    faq_list.append(faq)
+
+    print("💬 New FAQ added:", faq)  # << This is your debug statement
+
+    return jsonify({"status": "success", "message": "FAQ added"}), 201
+
+# Mock: Get FAQs
+@support_bp.route('/faq', methods=['GET'])
+def get_faqs():
+    print("📋 Returning all FAQs")
+    return jsonify({"status": "success", "faqs": faq_list}), 200
 

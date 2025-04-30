@@ -1,0 +1,28 @@
+.qa-container {
+  max-width: 600px;
+  margin: 20px auto;
+  font-family: sans-serif;
+}
+
+.qa-form {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.qa-form input {
+  flex: 1;
+  padding: 8px;
+  margin-right: 8px;
+}
+
+.qa-form button {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.qa-item {
+  background: #f3f3f3;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from './views/login';
 import Signup from './views/signup';
+import QASection from './QASection';
 import ProductForm from "./views/ProductForm";
 import ProductList from "./views/ProductList";
 import ProductDetail from './views/ProductDetail';
@@ -28,6 +29,8 @@ function App() {
           <Route path="/product" element={<ProductDetail />} />
           <Route path="/create" element={<ProductForm />} />
           <Route path="/bid" element={<BidForm />} />
+          <Route path="/faq" element={<QASection />} />
+          
 
           {/* Admin routes */}
           <Route path="/admin-login" element={<AdminLogin />} />

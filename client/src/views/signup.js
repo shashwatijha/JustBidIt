@@ -1,46 +1,38 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import "../styles/signup.css";
+import "../styles/login.css";
 import countryList from 'react-select-country-list';
 import Select from 'react-select';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function SignupForm() {
     const [accountType, setAccountType] = useState("personal");
-    const [country, setCountry] = useState('');
-    const [formData, setFormData] = useState({
-        fullName: '',
-        businessName: '',
-        email: '',
-        username: '',
-        password: '',
-        confirmPassword: ''
-    });
+    const [country, setCountry] = useState(null);
 
     const options = countryList().getData();
 
-    const handleCountryChange = (selectedOption) => {
-        setCountry(selectedOption);
-    };
+    const {
+        register,
+        handleSubmit,
+        watch,
+        reset,
+        formState: { errors, touchedFields }
+    } = useForm({
+        mode: 'onChange',
+    });
 
-    const handleToggle = (type) => setAccountType(type);
+    const password = watch("password");
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
+    const isPasswordStrong = (val) =>
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(val);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        // Prepare data to send to the backend
+    const onSubmit = async (formData) => {
         const dataToSend = {
             accountType,
-            country: country.value, // Get the selected country value
-            fullName: formData.fullName,
-            businessName: formData.businessName,
-            email: formData.email,
-            username: formData.username,
-            password: formData.password,
-            confirmPassword: formData.confirmPassword
+            country: country?.value || "",
+            ...formData
         };
 
         try {
@@ -52,15 +44,38 @@ export default function SignupForm() {
 
             const result = await response.json();
             if (response.ok) {
-                alert(result.message); // Success message
+                toast.success("User registered successfully");
+                reset();
+                setCountry(null);
             } else {
-                alert(result.message); // Error message
+                toast.error(result.message || "Registration failed");
             }
         } catch (error) {
             console.error('Error:', error);
             alert('An error occurred. Please try again.');
         }
     };
+
+    const renderField = (label, name, type = "text") => (
+        <>
+            <input
+                name={name}
+                type={type}
+                placeholder={label}
+                className={
+                    touchedFields[name]
+                        ? errors[name]
+                            ? "input-error"
+                            : "input-valid"
+                        : ""
+                }
+                {...register(name, {
+                    required: `${label} is required`,
+                })}
+            />
+            {errors[name] && <p className="input-hint">{errors[name].message}</p>}
+        </>
+    );
 
     return (
         <div className="signup-container">
@@ -78,115 +93,97 @@ export default function SignupForm() {
                     <div className="signup-toggle">
                         <button
                             className={accountType === "personal" ? "toggle-btn active" : "toggle-btn"}
-                            onClick={() => handleToggle("personal")}
+                            onClick={() => setAccountType("personal")}
                         >
                             Personal
                         </button>
                         <button
                             className={accountType === "business" ? "toggle-btn active" : "toggle-btn"}
-                            onClick={() => handleToggle("business")}
+                            onClick={() => setAccountType("business")}
                         >
                             Business
                         </button>
                     </div>
 
-                    <form className="form-content" onSubmit={handleSubmit}>
+                    <form className="form-content" onSubmit={handleSubmit(onSubmit)}>
                         {accountType === "personal" ? (
                             <>
-                                <input
-                                    name="fullName"
-                                    placeholder="Full Name"
-                                    value={formData.fullName}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    name="email"
-                                    placeholder="Email Address"
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    name="username"
-                                    placeholder="Username"
-                                    value={formData.username}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    name="password"
-                                    placeholder="Password"
-                                    type="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    name="confirmPassword"
-                                    placeholder="Confirm Password"
-                                    type="password"
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                />
-                                <Select
-                                    options={options}
-                                    value={country}
-                                    onChange={handleCountryChange}
-                                    placeholder="Country"
-                                    className="country-select"
-                                />
-                                <button className="submit-btn" type="submit">Create Personal Account</button>
+                                {renderField("Full Name", "fullName")}
+                                {renderField("Email Address", "email", "email")}
                             </>
                         ) : (
                             <>
-                                <input
-                                    name="businessName"
-                                    placeholder="Business Name"
-                                    value={formData.businessName}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    name="email"
-                                    placeholder="Business Email"
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    name="username"
-                                    placeholder="Username"
-                                    value={formData.username}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    name="password"
-                                    placeholder="Password"
-                                    type="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    name="confirmPassword"
-                                    placeholder="Confirm Password"
-                                    type="password"
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                />
-                                <Select
-                                    options={options}
-                                    value={country}
-                                    onChange={handleCountryChange}
-                                    placeholder="Country"
-                                    className="country-select"
-                                />
-                                <button className="submit-btn" type="submit">Create Business Account</button>
+                                {renderField("Business Name", "businessName")}
+                                {renderField("Business Email", "email", "email")}
                             </>
                         )}
+                        {renderField("Username", "username")}
+                        <input
+                            name="password"
+                            type="password"
+                            placeholder="Password"
+                            className={
+                                touchedFields.password
+                                    ? errors.password
+                                        ? "input-error"
+                                        : "input-valid"
+                                    : ""
+                            }
+                            {...register("password", {
+                                required: "Password is required",
+                                validate: (val) =>
+                                    isPasswordStrong(val) ||
+                                    "Must be 8+ characters, incl. letter, number & symbol"
+                            })}
+                        />
+                        {errors.password && (
+                            <p className="input-hint">{errors.password.message}</p>
+                        )}
+
+                        <input
+                            name="confirmPassword"
+                            type="password"
+                            placeholder="Confirm Password"
+                            className={
+                                touchedFields.confirmPassword
+                                    ? errors.confirmPassword
+                                        ? "input-error"
+                                        : "input-valid"
+                                    : ""
+                            }
+                            {...register("confirmPassword", {
+                                required: "Please confirm password",
+                                validate: (val) =>
+                                    val === password && isPasswordStrong(password) ||
+                                    "Passwords must match and meet strength rules"
+                            })}
+                        />
+                        {errors.confirmPassword && (
+                            <p className="input-hint">{errors.confirmPassword.message}</p>
+                        )}
+
+                        <Select
+                            options={options}
+                            value={country}
+                            onChange={(selectedOption) => setCountry(selectedOption)}
+                            placeholder="Country"
+                            className="country-select"
+                        />
+
+                        <button className="submit-btn" type="submit">
+                            {accountType === "personal" ? "Create Personal Account" : "Create Business Account"}
+                        </button>
                     </form>
 
-                    <p className="login-redirect">
-                        Already have an account? <a href="/login">Sign In</a>
-                    </p>
+                    <div className="divider" />
+                    <div className="loginsignup-container">
+                        <p className="signup-text">
+                            Already have an account? <a href="/login" className="create-link">Sign In</a>
+                        </p>
+                    </div>
                 </div>
             </div>
+            <ToastContainer position="top-right" autoClose={3000} />
         </div>
     );
 }

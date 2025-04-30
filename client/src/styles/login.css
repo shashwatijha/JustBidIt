@@ -68,13 +68,17 @@ form input[type="password"] {
 }
 
 .link {
-  font-size: 0.9rem;
-  color: #0058a3;
+  color: #1a4dab;
   text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.link:hover {
+  text-decoration: underline;
 }
 
 .login-button {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   width: 100%;
   padding: 0.75rem;
   background-color: #0058a3;
@@ -101,4 +105,44 @@ form input[type="password"] {
 .divider {
   margin: 1.5rem 0;
   border-top: 1px solid #ccc;
+}
+
+
+.loginsignup-container {
+  display: block;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.signup-text {
+  text-align: center;
+  font-size: 1rem;
+  color: #1a1a1a;
+}
+
+.create-link {
+  color: #1a4dab;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.create-link:hover {
+  text-decoration: underline;
+}
+
+.input-error {
+  border: 2px solid #d32f2f !important;
+  outline: none;
+}
+
+.input-valid {
+  border: 2px solid #2e7d32 !important;
+  outline: none;
+}
+
+.input-hint {
+  font-size: 0.85rem;
+  color: #d32f2f;
+  margin-top: 0.25rem;
+  margin-bottom: 1.25rem;
 }

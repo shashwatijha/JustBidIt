@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// import { useNavigate } from 'react-router-dom';
 
 import '../styles/login.css';
 
@@ -65,26 +64,17 @@ function Login() {
           />
 
           <div className="row-between">
-            <label>
-              <input
-                type="checkbox"
-                checked={stayLoggedIn}
-                onChange={() => setStayLoggedIn(!stayLoggedIn)}
-              />
-              Stay logged in
-            </label>
-            <a href="#" className="link">Forgot your password?</a>
+            <a href="/forgot-password" className="link">Forgot password?</a>
+            <Link to="/admin-login" className="link">Login as Admin</Link>
           </div>
 
           <button type="submit" className="login-button">Continue</button>
           <div className="divider" />
-          <p>Don’t have an account?</p>
-          <button className="outline-button">
-            <Link to="/signup" className="link-button">Create Account</Link>
-          </button>
-          <p className="admin-login-link">
-            <Link to="/admin-login" className="link">Login as Admin</Link>
-          </p>
+          <div className="loginsignup-container">
+            <p className="signup-text">
+              Don’t have an account yet? <Link to="/signup" className="create-link">Create one.</Link>
+            </p>
+          </div>
           <p className="login-message">{msg}</p>
         </form>
       </div>

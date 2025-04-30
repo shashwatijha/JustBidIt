@@ -7,6 +7,10 @@ import '../styles/adminDashboard.css';
 export default function AdminDashboard() {
   const [activeSection, setActiveSection] = useState('create');
 
+  const handleLogout = () => {
+    window.location.href = '/admin-login';
+  };
+
   const renderPanel = () => {
     switch (activeSection) {
       case 'sales':
@@ -20,20 +24,29 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="admin-container">
-      <aside className="admin-sidebar">
-        <h2>Admin Panel</h2>
-        <ul>
-          <li onClick={() => setActiveSection('create')}>Create Customer Rep</li>
-          <li onClick={() => setActiveSection('sales')}>Sales Report</li>
-          <li onClick={() => setActiveSection('reset')}>Reset Requests</li>
-          <li onClick={() => window.location.href = '/admin-login'}>Logout</li>
-        </ul>
-      </aside>
+    <div className="admin-dashboard-container">
+      <header className="admin-header">
+        <div className="admin-header-title">
+          <span className="ikea-logo">IKEA</span>
+          <span className="dashboard-title">Admin Dashboard</span>
+        </div>
+        <button onClick={handleLogout} className="logout-button">Logout</button>
+      </header>
 
-      <main className="admin-main">
-        {renderPanel()}
-      </main>
+      <div className="admin-body">
+        <aside className="admin-sidebar">
+          <ul>
+            <li onClick={() => setActiveSection('create')}>Create Customer Rep</li>
+            <li onClick={() => setActiveSection('sales')}>Sales Report</li>
+            <li onClick={() => setActiveSection('reset')}>Reset Requests</li>
+            <li onClick={handleLogout}>Logout</li>
+          </ul>
+        </aside>
+
+        <main className="admin-main">
+          {renderPanel()}
+        </main>
+      </div>
     </div>
   );
 }

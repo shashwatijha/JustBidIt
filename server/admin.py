@@ -2,6 +2,7 @@ from flask import Blueprint, request, render_template, redirect, url_for, sessio
 from sqlalchemy import text
 import hashlib
 from auth import db 
+from sqlalchemy.exc import IntegrityError
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -20,22 +21,45 @@ def create_customer_rep():
     password = request.json.get('password')
 
     if not username or not password:
-        return jsonify({"status": "error", "message": "Username and Password required"}), 400
+        return jsonify({
+            "status": "error",
+            "message": "Both username and password are required."
+        }), 400
 
     password_hash = hashlib.sha256(password.encode()).hexdigest()
 
     try:
-        with db.engine.connect() as conn:
+        with db.engine.begin() as conn:  # Automatically handles commit/rollback
             conn.execute(
-                text("INSERT INTO customer_reps (username, password_hash) VALUES (:username, :password_hash)"),
+                text("""
+                    INSERT INTO customer_reps (username, password_hash)
+                    VALUES (:username, :password_hash)
+                """),
                 {"username": username, "password_hash": password_hash}
             )
-            conn.commit()  # <-- 🛠 COMMIT after insert!
+
+    except IntegrityError as e:
+        # Check if it's a duplicate username error
+        if 'unique constraint' in str(e).lower() or 'duplicate key' in str(e).lower():
+            return jsonify({
+                "status": "error",
+                "message": f"The username '{username}' is already taken. Please choose another."
+            }), 409  # 409 = Conflict
+        return jsonify({
+            "status": "error",
+            "message": "An unexpected database error occurred."
+        }), 500
+
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({
+            "status": "error",
+            "message": f"Server error: {str(e)}"
+        }), 500
 
-    return jsonify({"status": "success", "message": "Customer Representative created successfully."})
-
+    return jsonify({
+        "status": "success",
+        "message": "Customer Representative created successfully."
+    }), 201
 # Admin: Generate Sales Report
 @admin_bp.route('/generate-sales-report', methods=['GET'])
 def generate_sales_report():

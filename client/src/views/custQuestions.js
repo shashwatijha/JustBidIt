@@ -42,7 +42,7 @@ export default function Questions() {
   return (
     <div className="rep-main">
       <div className="questions-wrapper">
-      <h2 className="faq-title">Pending Answers <span className="">({unanswered.length})</span></h2>
+        <h2 className="faq-title">Pending Answers <span className="">({unanswered.length})</span></h2>
 
         {unanswered.length === 0 ? (
           <div className="alert alert-success">All questions have been answered.</div>
@@ -56,11 +56,9 @@ export default function Questions() {
                 value={answers[q.id] || ''}
                 onChange={(e) => handleChange(q.id, e.target.value)}
               />
-              <div className="text-end">
-                <button
-                  className="ikea-submit-btn"
-                  onClick={() => handleSubmit(q.id)}
-                >
+              <div className="question-card-footer">
+                <span className="asked-by">Asked by: {q.username}</span>
+                <button className="ikea-submit-btn" onClick={() => handleSubmit(q.id)}>
                   Submit Answer
                 </button>
               </div>

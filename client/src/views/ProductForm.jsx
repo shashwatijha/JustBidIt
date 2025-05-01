@@ -32,7 +32,14 @@ function ProductForm() {
     e.preventDefault();
 
     const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => data.append(key, value));
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key === "reservePrice" && value.trim() === "") {
+        data.append(key, null);  // 👈 Send null if reservePrice is left blank
+      } else {
+        data.append(key, value);
+      }
+    });
+    
     data.append("productImage", image);
 
     try {
@@ -81,7 +88,7 @@ function ProductForm() {
         placeholder={placeholder}
         value={formData[name]}
         onChange={handleChange}
-        required
+        required={name !== "reservePrice"} // ❗ Reserve Price is optional
       />
     </div>
   );

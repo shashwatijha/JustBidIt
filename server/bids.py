@@ -71,15 +71,24 @@ def handle_bidding(product_id):
         second_limit = auto_bids[1].max_limit
         while current_price + increment <= second_limit and current_price + increment <= max_limit:
             current_price += increment
+    if top_manual and top_manual.bid_amount >= current_price:
+        while current_price + increment <= max_limit and current_price <= top_manual.bid_amount:
+            current_price += increment
 
-    if top_manual and top_manual.bid_amount > current_price:
-        if top_manual.bid_amount < max_limit:
-            while current_price + increment <= top_manual.bid_amount and current_price + increment <= max_limit:
-                current_price += increment
+        if current_price > top_manual.bid_amount:
             current_user_id = top_auto.user_id
         else:
             current_user_id = top_manual.user_id
             current_price = top_manual.bid_amount
+
+    # if top_manual and top_manual.bid_amount > current_price:
+    #     if top_manual.bid_amount < max_limit:
+    #         while current_price + increment <= top_manual.bid_amount and current_price + increment <= max_limit:
+    #             current_price += increment
+    #         current_user_id = top_auto.user_id
+    #     else:
+    #         current_user_id = top_manual.user_id
+    #         current_price = top_manual.bid_amount
 
     product.bid_price = current_price
     product.user_id = current_user_id 

@@ -6,20 +6,45 @@
   height: 100vh;
 }
 
-.rep-header {
-  background: linear-gradient(to bottom right, #0058A3, #0079c1);
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-}
 
 .rep-header-title {
   display: flex;
   align-items: baseline;
   gap: 1rem;
 }
+
+.rep-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to bottom right, #0058A3, #0079c1);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  z-index: 1001;
+}
+
+.header-user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-icon {
+  font-size: 22px;
+  color: white;
+}
+
+.user-name {
+  font-weight: bold;
+  font-size: 15px;
+  color: white;
+}
+
 
 .ikea-logo {
   font-size: 1.8rem;
@@ -47,6 +72,77 @@
 .logout-button:hover {
   background: #FFC107;
 }
+
+.ikea-logout-btn {
+  background: none;
+  border: none;
+  color: #FFD000;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.ikea-logout-btn:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.questions-wrapper {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.question-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.25rem;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.question-text {
+  color: #0058A3;
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 0.75rem;
+}
+
+.ikea-answer-box {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+  padding: 0.65rem;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.ikea-answer-box:focus {
+  border-color: #0058A3;
+  outline: none;
+}
+
+.ikea-submit-btn {
+  background-color: #0058A3;
+  color: #FFD000;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.ikea-submit-btn:hover {
+  background-color: #114571;
+}
+
+
+
 
 /* ------------- Sidebar ------------- */
 

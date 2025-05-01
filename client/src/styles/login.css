@@ -48,6 +48,8 @@ form label {
   margin-top: 1rem;
   font-weight: 600;
   color: #333;
+  align-self: start;
+  margin-bottom: 0.25rem; /* Tightens space below label */
 }
 
 form input[type="text"],
@@ -65,6 +67,8 @@ form input[type="password"] {
   justify-content: space-between;
   align-items: center;
   margin-top: 1rem;
+  gap: 1rem; /* ⬅️ This forces space even if justify fails */
+  width: 100%;
 }
 
 .link {

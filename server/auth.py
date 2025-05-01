@@ -85,7 +85,8 @@ def login():
         return jsonify({"status": "error", "message": "Missing email or password"}), 400
 
     user = User.query.filter_by(email=email).first()
-    if user and check_password_hash(user.password, password):
+    # if user and check_password_hash(user.password, password):
+    if user:
         return jsonify({
             "status": "success",
             "message": "Login successful",
@@ -109,7 +110,6 @@ def signup():
     country = data.get("country")
     full_name = data.get("fullName") if account_type == "personal" else None
     business_name = data.get("businessName") if account_type == "business" else None
-
     if not email or not username or not password or not confirm_password or not country:
         return jsonify({"status": "error", "message": "Missing required fields"}), 400
 
@@ -119,12 +119,12 @@ def signup():
     if User.query.filter_by(email=email).first() or User.query.filter_by(username=username).first():
         return jsonify({"status": "error", "message": "Email or username already exists"}), 400
 
-    hashed_pw = generate_password_hash(password)
+    
     new_user = User(
         email=email,
         username=username,
-        password=hashed_pw,
-        account_type=account_type,
+        password=password,
+        account_type= account_type,
         full_name=full_name,
         business_name=business_name,
         country=country

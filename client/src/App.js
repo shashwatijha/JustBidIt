@@ -24,6 +24,8 @@ function App() {
     <Router>
       <div>
         <Routes>
+          {/* <Auth /> */}
+          <Route path="/" element={<Login />} />
           {/* User routes */}
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
@@ -32,6 +34,8 @@ function App() {
           <Route path="/product" element={<ProductDetail />} />
           <Route path="/create" element={<ProductForm />} />
           <Route path="/bid" element={<BidForm />} />
+          {/* <Route path="/" element={<Auth />} /> */}
+          
           <Route path="/faq" element={<QASection />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />

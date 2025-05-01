@@ -5,7 +5,6 @@ import '../styles/login.css';
 
 function Login() {
 
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
@@ -26,6 +25,8 @@ function Login() {
       const data = await response.json();
       if (response.ok) {
         setMsg(`Welcome, ${data.user.username}!`);
+        localStorage.setItem("userId", data.user.id);
+        localStorage.setItem("fullName", data.user.username);
         navigate('/products');
       } else {
         setMsg(data.message || "Login failed");

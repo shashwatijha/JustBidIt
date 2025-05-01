@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import "../styles/ProductForm.css"; // ✅ Import the CSS
 
 function ProductForm() {
   const [formData, setFormData] = useState({
@@ -16,6 +16,7 @@ function ProductForm() {
 
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,22 +30,38 @@ function ProductForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => data.append(key, value));
     data.append("productImage", image);
-  
+
     try {
       const response = await fetch("http://localhost:8000/api/auctions", {
         method: "POST",
         body: data,
       });
-  
+
       const result = await response.json();
-  
+
       if (response.ok) {
-        alert("Product submitted successfully!");
+        setSuccessMessage("✅ Product submitted successfully!");
         console.log("✅ Success:", result);
+        // Reset form after successful submission
+        setFormData({
+          name: "",
+          price: "",
+          brand: "",
+          storage: "",
+          ram: "",
+          color: "",
+          screenSize: "",
+          reservePrice: "",
+          closingDate: "",
+        });
+        setImage(null);
+        setPreview(null);
+
+        setTimeout(() => setSuccessMessage(""), 3000);
       } else {
         alert("❌ Server error: " + result.error);
         console.error("Server error:", result);
@@ -54,82 +71,71 @@ function ProductForm() {
       alert("Network error occurred while submitting.");
     }
   };
-  
 
   const formField = (label, name, type = "text", placeholder = "") => (
-    <div style={{ display: "flex", flexDirection: "column", marginBottom: "12px" }}>
-      <label style={{ fontWeight: "bold", marginBottom: "5px" }}>{label}:</label>
+    <div className="form-field">
+      <label>{label}:</label>
       <input
         type={type}
         name={name}
         placeholder={placeholder}
+        value={formData[name]}
         onChange={handleChange}
         required
-        style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
       />
     </div>
   );
 
   return (
-    <div style={{ maxWidth: "500px", margin: "auto", padding: "20px" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Enter Product Details</h2>
+    <div className="product-form-container">
+      <h2 className="form-title">Enter Product Details</h2>
+
+      {successMessage && <div className="success-toast">{successMessage}</div>}
+
       <form onSubmit={handleSubmit}>
         {formField("Name", "name", "text", "Enter Product Name")}
-        {formField("Price", "price", "number", "Enter Price (e.g. 499.99)")}
+        {formField("Price", "price", "number", "Enter Price (in USD 💵)")}
         {formField("Brand", "brand", "text", "Enter Brand (e.g. Apple, Samsung)")}
         {formField("Storage", "storage", "text", "Enter Storage (e.g. 128GB)")}
-        {formField("Ram", "ram", "text", "Enter RAM (e.g. 8GB)")}
+        {formField("RAM", "ram", "text", "Enter RAM (e.g. 8GB)")}
         {formField("Color", "color", "text", "Enter Color (e.g. Black, White)")}
         {formField("Screen Size", "screenSize", "text", "Enter Screen Size (e.g. 6.5 inches)")}
-        {formField("Reserve Price", "reservePrice", "number", "Enter Reserve Price")}
+        {formField("Reserve Price", "reservePrice", "number", "Enter Reserve Price (in USD 💵)")}
 
-        <div style={{ display: "flex", flexDirection: "column", marginBottom: "12px" }}>
-          <label style={{ fontWeight: "bold", marginBottom: "5px" }}>Closing Date:</label>
+        <div className="form-field">
+          <label>Closing Date:</label>
           <input
             type="datetime-local"
             name="closingDate"
+            value={formData.closingDate}
             onChange={handleChange}
             required
-            style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
           />
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", marginBottom: "12px" }}>
-          <label style={{ fontWeight: "bold", marginBottom: "5px" }}>Product Image:</label>
+        <div className="form-field">
+          <label>Product Image:</label>
           <input
             type="file"
             accept="image/*"
             onChange={handleImageChange}
             required
-            style={{ padding: "4px" }}
           />
         </div>
 
         {preview && (
-          <div style={{ marginBottom: "20px", textAlign: "center" }}>
+          <div className="preview-container">
             <strong>Image Preview:</strong>
             <br />
             <img
               src={preview}
               alt="Preview"
-              style={{ width: "100%", maxHeight: "200px", objectFit: "cover", marginTop: "10px" }}
+              className="preview-image"
             />
           </div>
         )}
 
-        <button
-          type="submit"
-          style={{
-            width: "100%",
-            padding: "10px",
-            backgroundColor: "#007bff",
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-            fontWeight: "bold",
-            cursor: "pointer"
-          }}
-        >
+        <button type="submit" className="submit-button">
           Submit
         </button>
       </form>

@@ -28,7 +28,7 @@ function Login() {
       if (response.ok) {
         setMsg(`Welcome, ${data.user.username}!`);
         localStorage.setItem("userId", data.user.id);
-        localStorage.setItem("fullName", data.user.fullName);
+        localStorage.setItem("fullName", data.user.username);
         navigate('/products');
       } else {
         setMsg(data.message || "Login failed");

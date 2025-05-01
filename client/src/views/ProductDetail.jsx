@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../styles/ProductDetail.css"; // ✅ Import the centralized CSS
+import "../styles/ProductDetail.css"; 
 
 function ProductDetail() {
   const [product, setProduct] = useState(null);

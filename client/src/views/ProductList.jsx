@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
 
+
 // Countdown helper
 const calculateTimeLeft = (closingDate) => {
   const difference = +new Date(closingDate) - +new Date();
@@ -33,8 +34,22 @@ function ProductList() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState([]);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [showNotifications, setShowNotifications] = useState(false);
 
-  const fullName = localStorage.getItem("fullName") || "Unknown"; // you can set it in login
+  const fullName = localStorage.getItem("fullName") || "Unknown"; 
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      fetch(`http://localhost:8000/api/notifications?user_id=${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          setNotifications(data);
+          setNotificationCount(data.length);
+        });
+    }
+  }, []);
 
   useEffect(() => {
     fetch("http://localhost:8000/api/products")
@@ -115,6 +130,7 @@ const calculateTimeLeft = (closingDate) => {
 
   const getFilteredAndSortedProducts = () => {
     let filteredProducts = products.filter((product) => {
+
       const matchesSearch =
         product.name.toLowerCase().includes(searchTerm) ||
         product.brand.toLowerCase().includes(searchTerm) ||
@@ -169,6 +185,10 @@ const calculateTimeLeft = (closingDate) => {
           <li>
             <a href="#">My Bids</a> {/* no link for now */}
           </li>
+          <li className="sidebar-alert" onClick={() => setShowNotifications(true)}>
+            <span>🔔 Alert</span>
+            {notificationCount > 0 && <span className="notification-count">{notificationCount}</span>}
+          </li>
         </ul>
 
         <div className="logout-container">
@@ -181,7 +201,7 @@ const calculateTimeLeft = (closingDate) => {
       {/* Main content same, title updated */}
       <div className="main-content">
         <div className="product-container">
-          <h1 className="product-title">BuyME</h1>
+          <h1 className="product-title">JustBIDit</h1>
 
           {/* Search + Filter + Sort Section */}
           <div className="search-sort-bar">
@@ -269,38 +289,62 @@ const calculateTimeLeft = (closingDate) => {
 
           {/* Products Grid */}
           {getFilteredAndSortedProducts().length > 0 ? (
-            <div className="product-grid">
-              {getFilteredAndSortedProducts().map((product) => (
+          <div className="product-grid">
+            {getFilteredAndSortedProducts().map((product) => {
+              const isEnded = new Date(product.closing_date) < new Date();
+              //print(isEnded, product.closing_date);
+              console.log(product.closing_date, new Date(product.closing_date), new Date(), isEnded);
+
+              return (
                 <div
-                key={product.id}
-                className="product-card"
-                onClick={() => handleView(product.id)}
-                style={{ cursor: "pointer" }}
-              >
-                <img src={product.image_url} alt={product.name} className="product-image" />
-                <h2 className="product-name">{product.name}</h2>
-                <p className="product-brand">{product.brand}</p>
-                <p className="product-price">${product.price}</p>
-              
-                {timeLeft[product.id] ? (
-                  <p className="product-timer">
-                    Ends in: {timeLeft[product.id].days}d {timeLeft[product.id].hours}h{" "}
-                    {timeLeft[product.id].minutes}m {timeLeft[product.id].seconds}s
-                  </p>
-                ) : (
-                  <p className="product-ended">Auction Ended</p>
-                )}
-              </div>
-              
-              ))}
-            </div>
-          ) : (
-            <div className="no-products-wrapper">
-              <p className="no-products-message">No products found matching your search.</p>
-            </div>
-          )}
+                  key={product.id}
+                  className={`product-card ${isEnded ? 'disabled' : ''}`}
+                  onClick={() => !isEnded && handleView(product.id)}
+                  style={{ cursor: isEnded ? "default" : "pointer" }}
+                >
+                  <img src={product.image_url} alt={product.name} className="product-image" />
+                  <h2 className="product-name">{product.name}</h2>
+                  <p className="product-brand">{product.brand}</p>
+                  <p className="product-price">${product.price}</p>
+
+                  {timeLeft[product.id] ? (
+                    <p className="product-timer">
+                      Ends in: {timeLeft[product.id].days}d {timeLeft[product.id].hours}h{" "}
+                      {timeLeft[product.id].minutes}m {timeLeft[product.id].seconds}s
+                    </p>
+                  ) : (
+                    <p className="product-ended">Auction Ended</p>
+                  )}
+
+                  {isEnded && <p className="product-ended">Auction Closed</p>}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="no-products-wrapper">
+            <p className="no-products-message">No products found matching your search.</p>
+          </div>
+        )}
+
         </div>
       </div>
+      {showNotifications && (
+        <div className="notification-popup">
+          <div className="notification-popup-content">
+            <h3>Notifications</h3>
+            <button className="close-btn" onClick={() => setShowNotifications(false)}>×</button>
+            <ul>
+              {notifications.map(n => (
+                <li key={n.id}>
+                  <p>{n.message}</p>
+                  <small>{n.created_at}</small>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

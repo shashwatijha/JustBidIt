@@ -1,7 +1,7 @@
 from flask import request, jsonify, Blueprint
 from auth import db
 from datetime import datetime
-
+from products import Product
 bid_bp = Blueprint('bid', __name__)
 
 class Bid(db.Model):
@@ -9,20 +9,18 @@ class Bid(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.Integer, nullable=False)  # Add this back
-    bid_amount = db.Column(db.Float, nullable=False)  # 💵 assume this is USD
+    user_id = db.Column(db.Integer, nullable=False)
+    bid_amount = db.Column(db.Float, nullable=False)
     auto_bid = db.Column(db.Boolean, default=False)
     max_limit = db.Column(db.Float)
     increment = db.Column(db.Float)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-# 1️⃣ Route to place bid
 @bid_bp.route('/api/bid', methods=['POST'])
 def place_bid():
     try:
         data = request.json
 
-        # Step 1: Save the incoming manual or auto bid
         new_bid = Bid(
             product_id=data['productId'],
             user_id=data['userId'],
@@ -34,69 +32,56 @@ def place_bid():
         db.session.add(new_bid)
         db.session.commit()
 
-        # Step 2: Trigger auto-bidding if applicable
-        handle_auto_bidding(new_bid)
-
+        handle_bidding(product_id=data['productId'])
         return jsonify({"message": "Bid submitted successfully!"}), 201
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-def handle_auto_bidding(latest_bid):
-    """
-    After a new bid, check if any active auto-bidders
-    can beat the latest bid within their max_limit.
-    """
-    from sqlalchemy import desc, func
-    
-    # Get the highest bid for this product
-    highest_bid = Bid.query.filter_by(product_id=latest_bid.product_id).order_by(desc(Bid.bid_amount)).first()
-    if not highest_bid:
+def handle_bidding(product_id):
+    product = Product.query.get(product_id)
+    if not product:
+        print(f"[ERROR] Product ID {product_id} not found.")
         return
-    
-    # Find the latest auto-bid for each user (using subquery)
-    latest_auto_bids_subq = db.session.query(
-        Bid.user_id,
-        func.max(Bid.created_at).label('latest_time')
-    ).filter(
-        Bid.product_id == latest_bid.product_id,
-        Bid.auto_bid == True
-    ).group_by(Bid.user_id).subquery()
-    
-    # Join to get the actual bid records
-    active_auto_bidders = Bid.query.join(
-        latest_auto_bids_subq,
-        db.and_(
-            Bid.user_id == latest_auto_bids_subq.c.user_id,
-            Bid.created_at == latest_auto_bids_subq.c.latest_time
-        )
-    ).filter(
-        Bid.product_id == latest_bid.product_id,
-        Bid.auto_bid == True,
-        Bid.user_id != highest_bid.user_id  # Skip if this user has the highest bid
-    ).all()
-    
-    for auto_bidder in active_auto_bidders:
-        current_bid_amount = auto_bidder.bid_amount
 
-    # Keep increasing by increment
-        while current_bid_amount + (auto_bidder.increment or 0) <= (auto_bidder.max_limit or 0):
-            current_bid_amount += (auto_bidder.increment or 0)
+    auto_bids = Bid.query.filter_by(product_id=product_id, auto_bid=True)
+    auto_bids = auto_bids.order_by(Bid.max_limit.desc()).limit(2).all()
 
-        # Only place bid if it beats highest bid
-            if current_bid_amount > highest_bid.bid_amount:
-                new_auto_bid = Bid(
-                    product_id=latest_bid.product_id,
-                    user_id=auto_bidder.user_id,
-                    bid_amount=current_bid_amount,
-                    auto_bid=True,
-                    max_limit=auto_bidder.max_limit,
-                    increment=auto_bidder.increment
-                )
-                db.session.add(new_auto_bid)
-                db.session.commit()
+    top_manual = Bid.query.filter_by(product_id=product_id, auto_bid=False)
+    top_manual = top_manual.order_by(Bid.bid_amount.desc()).first()
 
-            # Update highest bid
-                highest_bid = new_auto_bid
+    if not auto_bids and top_manual:
+        product.bid_price = top_manual.bid_amount
+        product.user_id = top_manual.user_id
+        db.session.commit()
+        print(f"[INFO] Manual-only: User {top_manual.user_id} leads product {product_id} @ ${top_manual.bid_amount}")
+        return
 
-                break  # ✅ Place only one bid per auto-bidder for now
+    if not auto_bids:
+        print("[INFO] No auto-bidders. Skipping.")
+        return
+
+    top_auto = auto_bids[0]
+    current_user_id = top_auto.user_id
+    current_price = top_auto.bid_amount
+    increment = top_auto.increment or 1
+    max_limit = top_auto.max_limit
+
+    if len(auto_bids) > 1:
+        second_limit = auto_bids[1].max_limit
+        while current_price + increment <= second_limit and current_price + increment <= max_limit:
+            current_price += increment
+
+    if top_manual and top_manual.bid_amount > current_price:
+        if top_manual.bid_amount < max_limit:
+            while current_price + increment <= top_manual.bid_amount and current_price + increment <= max_limit:
+                current_price += increment
+            current_user_id = top_auto.user_id
+        else:
+            current_user_id = top_manual.user_id
+            current_price = top_manual.bid_amount
+
+    product.bid_price = current_price
+    product.user_id = current_user_id 
+    db.session.commit()
+    print(f"[INFO] Bid processed. Product {product_id} → ${current_price} (Lead: User {current_user_id})")

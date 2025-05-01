@@ -48,7 +48,8 @@ def create_product():
             ram=form['ram'],
             color=form['color'],
             screen_size=form['screenSize'],
-            reserve_price=float(form['reservePrice']),  # 💵 reserve price in USD
+            reserve_price = float(form['reservePrice']) if form.get('reservePrice') not in [None, '', 'null'] else None,
+
             closing_date=form['closingDate'],
             image_filename=filename
         )
@@ -78,7 +79,8 @@ def get_products():
                 "ram": product.ram,
                 "color": product.color,
                 "screen_size": product.screen_size,
-                "reserve_price": round(product.reserve_price, 2),
+                "reserve_price": round(product.reserve_price, 2) if product.reserve_price is not None else None,
+
                 "closing_date": product.closing_date.strftime('%Y-%m-%d %H:%M:%S'),
                 "image_url": f"http://localhost:8000/uploads/{product.image_filename}"
             })
@@ -110,7 +112,8 @@ def get_product_by_id():
             "ram": product.ram,
             "color": product.color,
             "screen_size": product.screen_size,
-            "reserve_price": round(product.reserve_price, 2),
+            "reserve_price": round(product.reserve_price, 2) if product.reserve_price is not None else None,
+
             "closing_date": product.closing_date.strftime('%Y-%m-%d %H:%M:%S'),
             "image_url": f"http://localhost:8000/uploads/{product.image_filename}"
         }
@@ -119,6 +122,37 @@ def get_product_by_id():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+
+# @product_bp.route('/api/winner', methods=['GET'])
+# def get_auction_winner():
+#     product_id = request.args.get('id')
+
+#     product = Product.query.get(product_id)
+
+
+#     if datetime.utcnow() < product.closing_date:
+#         return
+
+#     create_notification(
+#         user_id=winner_user_id,
+#         message=f"Congratulations! You have won the auction for product ID {product_id}.",
+#         notif_type='winner'
+#         )
+        
+#     if product.bid_price and product.user_id:
+#         return jsonify({
+#             "winner_user_id": int(product.user_id),
+#             "winning_bid": round(product.bid_price, 2),
+#             "product_id": product.id,
+#             "product_name": product.name
+#         }), 200
+    
+    
+
+#     else:
+#         return jsonify({"message": "No bids were placed for this product"}), 200
 
 
 

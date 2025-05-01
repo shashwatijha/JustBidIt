@@ -125,7 +125,6 @@ def handle_bidding(product_id):
             )
 
     db.session.commit()
-    print(f"[INFO] Final Bid: Product {product_id} → ${current_price} (Lead: User {current_user_id})")
 
 
 @bid_bp.route('/api/bids/user/<int:user_id>', methods=['GET'])
@@ -144,6 +143,7 @@ def get_user_bids(user_id):
     } for b, p in bids]
     return jsonify(result), 200
 
+
 @bid_bp.route('/api/bid-history/<int:product_id>', methods=['GET'])
 def get_bid_history(product_id):
     bids = BidHistory.query.filter_by(product_id=product_id).order_by(BidHistory.created_at.asc()).all()
@@ -154,3 +154,4 @@ def get_bid_history(product_id):
         "created_at": bid.created_at.strftime("%Y-%m-%d %H:%M:%S")
     } for bid in bids]
     return jsonify(result), 200
+

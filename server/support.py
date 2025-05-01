@@ -135,7 +135,7 @@ def delete_bid(bid_id):
 # TEMP FAQ list for testing
 faq_list = []
 
-# Mock: Create FAQ
+# User create FAQ
 @support_bp.route('/faq/create', methods=['POST'])
 def create_faq():
     data = request.get_json()
@@ -145,23 +145,111 @@ def create_faq():
     if not question or not user_id:
         return jsonify({"status": "error", "message": "Missing fields"}), 400
 
-    # Simulate adding to DB
-    faq = {
-        "id": len(faq_list) + 1,
-        "question": question,
-        "answer": None,
-        "user_id": user_id,
-        "status": "pending"
-    }
-    faq_list.append(faq)
+    try:
+        with db.engine.connect() as conn:
+            conn.execute(text("""
+                INSERT INTO faq (user_id, question, answered) 
+                VALUES (:user_id, :question, FALSE)
+            """), {"user_id": user_id, "question": question})
+            conn.commit()
+        return jsonify({"status": "success", "message": "FAQ added"}), 201
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
-    print("💬 New FAQ added:", faq)  # << This is your debug statement
 
-    return jsonify({"status": "success", "message": "FAQ added"}), 201
-
-# Mock: Get FAQs
 @support_bp.route('/faq', methods=['GET'])
 def get_faqs():
-    print("📋 Returning all FAQs")
-    return jsonify({"status": "success", "faqs": faq_list}), 200
+    try:
+        with db.engine.connect() as conn:
+            result = conn.execute(text("SELECT id, user_id, question, answer, answered FROM faq")).fetchall()
+            faqs = [
+                {
+                    "id": row.id,
+                    "user_id": row.user_id,
+                    "question": row.question,
+                    "answer": row.answer,
+                    "answered": row.answered
+                } for row in result
+            ]
+        return jsonify({"status": "success", "faqs": faqs}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
+@support_bp.route('/faq/unanswered', methods=['GET'])
+def get_unanswered_faqs():
+    try:
+        with db.engine.connect() as conn:
+            result = conn.execute(text("""
+                SELECT f.id, f.user_id, f.question, u.username
+                FROM faq f
+                JOIN users u ON f.user_id = u.id
+                WHERE f.answered = FALSE
+            """)).fetchall()
+            faqs = [
+                {
+                    "id": row.id,
+                    "user_id": row.user_id,
+                    "question": row.question,
+                    "username": row.username
+                } for row in result
+            ]
+        return jsonify({"status": "success", "faqs": faqs}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@support_bp.route('/faq/answer/<int:faq_id>', methods=['PUT'])
+def answer_faq(faq_id):
+    data = request.get_json()
+    answer = data.get('answer')
+
+    if not answer:
+        return jsonify({"status": "error", "message": "Answer is required"}), 400
+
+    try:
+        with db.engine.connect() as conn:
+            conn.execute(text("""
+                UPDATE faq SET answer = :answer, answered = TRUE
+                WHERE id = :id
+            """), {"answer": answer, "id": faq_id})
+            conn.commit()
+        return jsonify({"status": "success", "message": "FAQ answered"}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@support_bp.route('/customer-rep/delete-auction/<int:product_id>', methods=['DELETE'])
+def delete_product(product_id):
+    try:
+        with db.engine.connect() as conn:
+            conn.execute(text("DELETE FROM products WHERE id = :id"), {"id": product_id})
+            conn.commit()
+        return jsonify({"status": "success"})
+    except Exception as e:
+        print("DELETE PRODUCT ERROR:", e)
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+    
+
+@support_bp.route('/customer-rep/get-auctions', methods=['GET'])
+def get_auctions():
+    try:
+        with db.engine.connect() as conn:
+            rows = conn.execute(text("""
+                SELECT p.id, p.name, p.brand, p.price, p.closing_date, u.username AS seller
+                FROM products p
+                LEFT JOIN users u ON p.user_id = u.id
+            """)).fetchall()
+            auctions = [
+                {
+                    "id": r.id,
+                    "name": r.name,
+                    "brand": r.brand,
+                    "price": r.price,
+                    "closing_date": r.closing_date,
+                    "seller": r.seller or "N/A"
+                } for r in rows
+            ]
+        return jsonify({"status": "success", "auctions": auctions})
+    except Exception as e:
+        print("GET PRODUCTS ERROR:", e)
+        return jsonify({"status": "error", "message": str(e)}), 500

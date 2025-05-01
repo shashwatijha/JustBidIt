@@ -32,18 +32,19 @@
   color: #fff;
 }
 
-.logout-button {
-  background: #FFD000;
-  color: #003366;
+.ikea-logout-btn {
+  background: none;
   border: none;
-  padding: 0.5rem 1rem;
-  font-weight: bold;
-  border-radius: 6px;
+  color: #FFD000;
+  font-weight: 500;
+  font-size: 1rem;
   cursor: pointer;
+  transition: color 0.2s ease;
 }
 
-.logout-button:hover {
-  background: #FFC107;
+.ikea-logout-btn:hover {
+  color: #ffffff;
+  text-decoration: underline;
 }
 
 .admin-body {

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles/custRepDashboard.css';
 
 function CustFaq() {
   const [questions, setQuestions] = useState([]);
   const [newQuestion, setNewQuestion] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetch('/api/faq')
@@ -15,6 +17,9 @@ function CustFaq() {
       });
   }, []);
 
+  const handleLogout = () => {
+    window.location.href = '/login';
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!newQuestion.trim()) return;
@@ -35,46 +40,70 @@ function CustFaq() {
       });
   };
 
+  const filteredQuestions = questions.filter(q =>
+    q.question.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="container py-4">
-      <div className="bg-primary text-white p-3 rounded d-flex justify-content-between align-items-center">
-        <h4 className="m-0 fw-bold">🟦 IKEA | Customer FAQs</h4>
-        <span className="badge bg-warning text-dark">Support</span>
-      </div>
+    <div className="rep-dashboard-container">
+      <header className="rep-header">
+        <div className="rep-header-title">
+          <span className="ikea-logo">🟦 IKEA</span>
+          <span className="dashboard-title">Customer FAQs</span>
+        </div>
+        <button className="ikea-logout-btn" onClick={handleLogout}>Logout</button>
+      </header>
 
-      <div className="mt-4">
-        <h5 className="fw-bold text-dark mb-3">💬 Help / Q&A Section</h5>
+      <main className="rep-main">
+        <div className="questions-wrapper">
+          <h2 className="mb-4">💬 Help / Q&A Section</h2>
 
-        <form onSubmit={handleSubmit} className="row g-2 align-items-center mb-4">
-          <div className="col">
+          <div className="d-flex flex-wrap align-items-center gap-2 mb-4">
+            {/* Search Bar */}
             <input
               type="text"
               className="form-control"
-              placeholder="Ask your question..."
-              value={newQuestion}
-              onChange={(e) => setNewQuestion(e.target.value)}
+              placeholder="🔍 Search questions..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ flex: '1 1 200px', minWidth: '150px' }}
             />
-          </div>
-          <div className="col-auto">
-            <button type="submit" className="btn btn-warning btn-sm px-3 fw-semibold">Submit</button>
-          </div>
-        </form>
 
-        {questions.length === 0 && (
-          <div className="alert alert-info">No questions have been asked yet.</div>
-        )}
+            {/* Ask Question Form */}
+            <form
+              onSubmit={handleSubmit}
+              className="d-flex gap-2 align-items-center"
+              style={{ flex: '2 1 400px', minWidth: '250px' }}
+            >
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Ask your question..."
+                value={newQuestion}
+                onChange={(e) => setNewQuestion(e.target.value)}
+              />
+              <button type="submit" className="ikea-submit-btn">Submit</button>
+            </form>
+          </div>
 
-        <div className="d-flex flex-column gap-3">
-          {questions.map((q, idx) => (
-            <div key={idx} className="card shadow-sm">
-              <div className="card-body">
-                <p className="fw-semibold mb-1"><strong>Q:</strong> {q.question}</p>
-                <p className="mb-0"><strong>A:</strong> {q.answer || '⏳ Awaiting response'}</p>
-              </div>
+
+
+          {filteredQuestions.length === 0 ? (
+            <div className="alert alert-info mt-3">No matching questions found.</div>
+          ) : (
+            <div className="d-flex flex-column gap-3 mt-3">
+              {filteredQuestions.map((q, idx) => (
+                <div key={idx} className="card shadow-sm">
+                  <div className="card-body">
+                    <p className="fw-semibold mb-1"><strong>Q:</strong> {q.question}</p>
+                    <p className="mb-0"><strong>A:</strong> {q.answer || '⏳ Awaiting response'}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
-      </div>
+      </main>
     </div>
   );
 }

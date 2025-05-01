@@ -1,0 +1,281 @@
+/* ------------- Layout and Header ------------- */
+
+.rep-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.rep-header {
+  background: linear-gradient(to bottom right, #0058A3, #0079c1);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+
+.rep-header-title {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.ikea-logo {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #FFD000;
+  letter-spacing: 1px;
+}
+
+.dashboard-title {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.logout-button {
+  background: #FFD000;
+  color: #003366;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background: #FFC107;
+}
+
+/* ------------- Sidebar ------------- */
+
+.rep-body {
+  display: flex;
+  flex-grow: 1;
+}
+
+.rep-sidebar {
+  width: 220px;
+  background-color: #f1f1f1;
+  padding: 1.5rem;
+}
+
+.rep-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.rep-sidebar li {
+  padding: 0.75rem;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  transition: background 0.2s;
+}
+
+.rep-sidebar li:hover {
+  background-color: #dbe9ff;
+}
+
+.rep-main {
+  flex-grow: 1;
+  padding: 2rem;
+  background-color: #fafafa;
+  overflow-y: auto;
+}
+
+/* ------------- Manage Users Section ------------- */
+
+.manage-users-wrapper {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.manage-users-wrapper h2 {
+  color: #003399;
+  margin-bottom: 1.5rem;
+}
+
+.search-input {
+  width: 300px;
+  padding: 0.6rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table th,
+.users-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.users-table th {
+  background-color: #f5f5f5;
+}
+
+.users-table button {
+  margin-right: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background: #0058A3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.action-icons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-icons button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  color: #0058A3;
+}
+
+.action-icons button:hover {
+  color: #ff4d4f;
+  /* red hover for delete */
+}
+
+.users-table button:hover {
+  background: #004080;
+}
+
+.close-btn:hover {
+  background: #002266;
+}
+
+.modal-header {
+  background-color: #0058A3;
+  color: #FFD000;
+}
+
+.modal-content {
+  border-radius: 12px !important;
+  overflow: hidden;
+  /* ensures smooth edge clipping */
+}
+
+
+.modal-title {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.modal-body {
+  background-color: #ffffff;
+  color: #003366;
+}
+
+.modal-footer {
+  background-color: #f5f5f5;
+}
+
+.modal .btn-close {
+  filter: invert(81%) sepia(22%) saturate(715%) hue-rotate(359deg) brightness(105%) contrast(101%);
+}
+
+.modal .btn-primary {
+  background-color: #FFD000;
+  color: #003366;
+  border: none;
+}
+
+.modal .btn-primary:hover {
+  background-color: #ffcc00;
+  color: #002244;
+}
+
+.fade-out {
+  animation: fadeOut 0.3s ease forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    height: auto;
+  }
+
+  to {
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.highlight-updated {
+  background-color: #e6ffe6;
+  animation: flashGreen 2s ease forwards;
+}
+
+@keyframes flashGreen {
+  0% {
+    background-color: #c8f7c5;
+  }
+
+  50% {
+    background-color: #e6ffe6;
+  }
+
+  100% {
+    background-color: white;
+  }
+}
+
+
+
+
+/* ------------- Questions Section (Later) ------------- */
+
+.questions-wrapper {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* ------------- Manage Bids Section (Later) ------------- */
+
+.manage-bids-wrapper {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+
+}
+
+.amount-filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.amount-filters input {
+  width: 150px;
+}
+
+
+/* ------------- Manage Auctions Section (Later) ------------- */
+
+.manage-auctions-wrapper {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}

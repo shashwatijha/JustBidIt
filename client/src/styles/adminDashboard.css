@@ -1,0 +1,82 @@
+.admin-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.admin-header {
+  background: linear-gradient(to bottom right, #0058A3, #0079c1);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+
+.admin-header-title {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.ikea-logo {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #FFD000;
+  letter-spacing: 1px;
+}
+
+.dashboard-title {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.logout-button {
+  background: #FFD000;
+  color: #003366;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background: #FFC107;
+}
+
+.admin-body {
+  display: flex;
+  flex-grow: 1;
+}
+
+.admin-sidebar {
+  width: 220px;
+  background-color: #f1f1f1;
+  padding: 1.5rem;
+}
+
+.admin-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.admin-sidebar li {
+  padding: 0.75rem;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  transition: background 0.2s;
+}
+
+.admin-sidebar li:hover {
+  background-color: #dbe9ff;
+}
+
+.admin-main {
+  flex-grow: 1;
+  padding: 2rem;
+  background-color: #fafafa;
+  overflow-y: auto;
+}

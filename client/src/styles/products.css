@@ -407,4 +407,16 @@
     pointer-events: none;
     background-color: #f0f0f0;
   }
+  .clear-button {
+    margin-top: 10px;
+    padding: 6px 12px;
+    background-color: #ffd200;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .clear-button:hover {
+    background-color: #ffd200;
+  }
   

@@ -16,6 +16,8 @@ import ForgotRepPassword from './views/forgotRepPassword';
 import CustomerRepDashboard from './views/custRepDashboard';
 import ForgotPassword from './views/forgotPassword';
 import ResetPassword from './views/resetPassword';
+import MyBids from './views/MyBids'; 
+
 
 function App() {
   const [dbStatus, setDbStatus] = useState(null);
@@ -34,6 +36,8 @@ function App() {
           <Route path="/product" element={<ProductDetail />} />
           <Route path="/create" element={<ProductForm />} />
           <Route path="/bid" element={<BidForm />} />
+          <Route path="/my-bids" element={<MyBids />} />
+
           {/* <Route path="/" element={<Auth />} /> */}
           
           <Route path="/faq" element={<QASection />} />

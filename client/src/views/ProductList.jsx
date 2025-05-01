@@ -5,24 +5,6 @@ import "../styles/products.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
-
-
-// Countdown helper
-const calculateTimeLeft = (closingDate) => {
-  const difference = +new Date(closingDate) - +new Date();
-  let timeLeft = {};
-
-  if (difference > 0) {
-    timeLeft = {
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-      minutes: Math.floor((difference / 1000 / 60) % 60),
-      seconds: Math.floor((difference / 1000) % 60),
-    };
-  }
-  return timeLeft;
-};
-
 function ProductList() {
   const [products, setProducts] = useState([]);
   const [timeLeft, setTimeLeft] = useState({});
@@ -81,6 +63,20 @@ const calculateTimeLeft = (closingDate) => {
   return timeLeft;
 };
 
+useEffect(() => {
+  const timer = setInterval(() => {
+    setTimeLeft((prev) => {
+      const updated = {};
+      products.forEach(product => {
+        updated[product.id] = calculateTimeLeft(product.closing_date);
+      });
+      return updated;
+    });
+  }, 1000);
+
+  return () => clearInterval(timer); // clean up on unmount
+}, [products]);
+
   const handleView = (id) => {
     navigate(`/product?id=${id}`);
   };
@@ -128,39 +124,65 @@ const calculateTimeLeft = (closingDate) => {
     }
   };
 
+  const handleClearNotifications = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/api/notifications/clear", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: localStorage.getItem("userId") })
+      });
+  
+      const data = await response.json();
+      if (response.ok) {
+        setNotifications([]);  // clear from UI
+        setNotificationCount(0);
+      } else {
+        console.error("Clear failed:", data.error);
+      }
+    } catch (error) {
+      console.error("Error clearing notifications:", error);
+    }
+  };
+  
   const getFilteredAndSortedProducts = () => {
-    let filteredProducts = products.filter((product) => {
-
-      const matchesSearch =
-        product.name.toLowerCase().includes(searchTerm) ||
-        product.brand.toLowerCase().includes(searchTerm) ||
-        product.color.toLowerCase().includes(searchTerm) ||
-        product.storage.toLowerCase().includes(searchTerm);
-
-      const matchesBrand =
-        brandFilter.length === 0 || brandFilter.includes(product.brand);
-
-      const matchesColor =
-        colorFilter.length === 0 || colorFilter.includes(product.color);
-
-      const matchesStorage =
-        storageFilter.length === 0 || storageFilter.includes(product.storage);
-
+    let filtered = products.filter((product) => {
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm)
+        || product.brand.toLowerCase().includes(searchTerm)
+        || product.color.toLowerCase().includes(searchTerm)
+        || product.storage.toLowerCase().includes(searchTerm);
+  
+      const matchesBrand = brandFilter.length === 0 || brandFilter.includes(product.brand);
+      const matchesColor = colorFilter.length === 0 || colorFilter.includes(product.color);
+      const matchesStorage = storageFilter.length === 0 || storageFilter.includes(product.storage);
+  
       return matchesSearch && matchesBrand && matchesColor && matchesStorage;
     });
-
-    if (sortOption === "price-asc") {
-      filteredProducts.sort((a, b) => a.price - b.price);
-    } else if (sortOption === "price-desc") {
-      filteredProducts.sort((a, b) => b.price - a.price);
-    } else if (sortOption === "brand-asc") {
-      filteredProducts.sort((a, b) => a.brand.localeCompare(b.brand));
-    } else if (sortOption === "brand-desc") {
-      filteredProducts.sort((a, b) => b.brand.localeCompare(a.brand));
-    }
-
-    return filteredProducts;
+  
+    // Sort logic
+    filtered.sort((a, b) => {
+      const now = new Date();
+      const aEnded = new Date(a.closing_date) < now;
+      const bEnded = new Date(b.closing_date) < now;
+  
+      // Always push ended auctions to the bottom
+      if (aEnded && !bEnded) return 1;
+      if (!aEnded && bEnded) return -1;
+  
+      // Secondary sorting based on sort option
+      if (sortOption === "price-asc") return a.price - b.price;
+      if (sortOption === "price-desc") return b.price - a.price;
+      if (sortOption === "brand-asc") return a.brand.localeCompare(b.brand);
+      if (sortOption === "brand-desc") return b.brand.localeCompare(a.brand);
+      if (sortOption === "time-left") {
+        return new Date(a.closing_date) - new Date(b.closing_date);
+      }
+  
+      return 0;
+    });
+  
+    return filtered;
   };
+  
 
   return (
     <div className="layout-container">
@@ -183,7 +205,7 @@ const calculateTimeLeft = (closingDate) => {
             </a>
           </li>
           <li>
-            <a href="#">My Bids</a> {/* no link for now */}
+          <a href="/my-bids" className={location.pathname === "/my-bids" ? "active-link" : ""}>My Bids</a>
           </li>
           <li className="sidebar-alert" onClick={() => setShowNotifications(true)}>
             <span>🔔 Alert</span>
@@ -283,6 +305,8 @@ const calculateTimeLeft = (closingDate) => {
                 <option value="price-desc">Price: High to Low</option>
                 <option value="brand-asc">Brand: A to Z</option>
                 <option value="brand-desc">Brand: Z to A</option>
+                <option value="time-left">Time: Least to Most</option>
+                <option value="time-left-desc">Time: Most to Least</option>
               </select>
             </div>
           </div>
@@ -343,6 +367,9 @@ const calculateTimeLeft = (closingDate) => {
               ))}
             </ul>
           </div>
+          <button onClick={handleClearNotifications} className="clear-button">
+            Clear All
+          </button>
         </div>
       )}
     </div>

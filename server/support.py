@@ -180,11 +180,19 @@ def get_unanswered_faqs():
     try:
         with db.engine.connect() as conn:
             result = conn.execute(text("""
-                SELECT id, user_id, question 
-                FROM faq 
-                WHERE answered = FALSE
+                SELECT f.id, f.user_id, f.question, u.username
+                FROM faq f
+                JOIN users u ON f.user_id = u.id
+                WHERE f.answered = FALSE
             """)).fetchall()
-            faqs = [{"id": row.id, "user_id": row.user_id, "question": row.question} for row in result]
+            faqs = [
+                {
+                    "id": row.id,
+                    "user_id": row.user_id,
+                    "question": row.question,
+                    "username": row.username
+                } for row in result
+            ]
         return jsonify({"status": "success", "faqs": faqs}), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -209,3 +217,39 @@ def answer_faq(faq_id):
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
+@support_bp.route('/customer-rep/delete-auction/<int:product_id>', methods=['DELETE'])
+def delete_product(product_id):
+    try:
+        with db.engine.connect() as conn:
+            conn.execute(text("DELETE FROM products WHERE id = :id"), {"id": product_id})
+            conn.commit()
+        return jsonify({"status": "success"})
+    except Exception as e:
+        print("DELETE PRODUCT ERROR:", e)
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+    
+
+@support_bp.route('/customer-rep/get-auctions', methods=['GET'])
+def get_auctions():
+    try:
+        with db.engine.connect() as conn:
+            rows = conn.execute(text("""
+                SELECT p.id, p.name, p.brand, p.price, p.closing_date, u.username AS seller
+                FROM products p
+                LEFT JOIN users u ON p.user_id = u.id
+            """)).fetchall()
+            auctions = [
+                {
+                    "id": r.id,
+                    "name": r.name,
+                    "brand": r.brand,
+                    "price": r.price,
+                    "closing_date": r.closing_date,
+                    "seller": r.seller or "N/A"
+                } for r in rows
+            ]
+        return jsonify({"status": "success", "auctions": auctions})
+    except Exception as e:
+        print("GET PRODUCTS ERROR:", e)
+        return jsonify({"status": "error", "message": str(e)}), 500

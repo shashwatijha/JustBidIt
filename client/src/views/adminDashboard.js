@@ -30,7 +30,7 @@ export default function AdminDashboard() {
           <span className="ikea-logo">IKEA</span>
           <span className="dashboard-title">Admin Dashboard</span>
         </div>
-        <button onClick={handleLogout} className="logout-button">Logout</button>
+        <button onClick={handleLogout} className="ikea-logout-btn">Logout</button>
       </header>
 
       <div className="admin-body">
@@ -39,7 +39,6 @@ export default function AdminDashboard() {
             <li onClick={() => setActiveSection('create')}>Create Customer Rep</li>
             <li onClick={() => setActiveSection('sales')}>Sales Report</li>
             <li onClick={() => setActiveSection('reset')}>Reset Requests</li>
-            <li onClick={handleLogout}>Logout</li>
           </ul>
         </aside>
 

@@ -65,8 +65,8 @@ function Login() {
           />
 
           <div className="row-between">
-            <a href="/forgot-password" className="link">Forgot password?</a>
-            <Link to="/admin-login" className="link">Login as Admin</Link>
+            <Link to="/forgot-password" className="link">Forgot password?</Link>
+            <Link to="/admin-login" className="link">                           Login as Admin</Link>
           </div>
 
           <button type="submit" className="login-button">Continue</button>

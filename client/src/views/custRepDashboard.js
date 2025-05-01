@@ -32,7 +32,7 @@ export default function CustomerRepDashboard() {
           <span className="ikea-logo">IKEA</span>
           <span className="dashboard-title">Customer Rep Dashboard</span>
         </div>
-        <button onClick={handleLogout} className="logout-button">Logout</button>
+        <button onClick={handleLogout} className="ikea-logout-btn">Logout</button>
       </header>
 
       <div className="rep-body">

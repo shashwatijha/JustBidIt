@@ -45,3 +45,13 @@ def create_notification(user_id, message, notif_type='info'):
         {"uid": user_id, "msg": message, "typ": notif_type, "ts": datetime.now()}
     )
     db.session.commit()
+
+@notification_bp.route('/api/notifications/clear', methods=['POST'])
+def clear_notifications():
+    user_id = request.json.get('user_id')
+    if not user_id:
+        return jsonify({"error": "Missing user_id"}), 400
+
+    Notification.query.filter_by(user_id=user_id).delete()
+    db.session.commit()
+    return jsonify({"message": "Notifications cleared"}), 200

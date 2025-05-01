@@ -3,7 +3,10 @@ import { useNavigate } from "react-router-dom";
 import "../styles/products.css";
 import "../styles/custRepDashboard.css";
 import Layout from "./layout";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 
+// Countdown helper
 const calculateTimeLeft = (closingDate) => {
   const difference = +new Date(closingDate) - +new Date();
   let timeLeft = {};
@@ -60,18 +63,22 @@ function ProductList() {
       .catch((err) => console.error("Error loading products:", err));
   }, []);
 
-  const handleView = (id) => {
-    navigate(`/product?id=${id}`);
-  };
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        const updated = {};
+        products.forEach((product) => {
+          updated[product.id] = calculateTimeLeft(product.closing_date);
+        });
+        return updated;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [products]);
 
-  const handleSortChange = (e) => {
-    setSortOption(e.target.value);
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value.toLowerCase());
-  };
-
+  const handleView = (id) => navigate(`/product?id=${id}`);
+  const handleSortChange = (e) => setSortOption(e.target.value);
+  const handleSearchChange = (e) => setSearchTerm(e.target.value.toLowerCase());
   const handleClearFilters = () => {
     setBrandFilter([]);
     setColorFilter([]);
@@ -92,10 +99,28 @@ function ProductList() {
       storage: storageFilter,
     }[category];
 
-    if (checked) {
-      filterSetter([...filterValues, value]);
-    } else {
-      filterSetter(filterValues.filter((item) => item !== value));
+    filterSetter(
+      checked ? [...filterValues, value] : filterValues.filter((item) => item !== value)
+    );
+  };
+
+  const handleClearNotifications = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/api/notifications/clear", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: localStorage.getItem("userId") }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setNotifications([]);
+        setNotificationCount(0);
+      } else {
+        console.error("Clear failed:", data.error);
+      }
+    } catch (error) {
+      console.error("Error clearing notifications:", error);
     }
   };
 
@@ -114,26 +139,34 @@ function ProductList() {
       return matchesSearch && matchesBrand && matchesColor && matchesStorage;
     });
 
-    if (sortOption === "price-asc") {
-      filteredProducts.sort((a, b) => a.price - b.price);
-    } else if (sortOption === "price-desc") {
-      filteredProducts.sort((a, b) => b.price - a.price);
-    } else if (sortOption === "brand-asc") {
-      filteredProducts.sort((a, b) => a.brand.localeCompare(b.brand));
-    } else if (sortOption === "brand-desc") {
-      filteredProducts.sort((a, b) => b.brand.localeCompare(a.brand));
-    }
+    filteredProducts.sort((a, b) => {
+      const now = new Date();
+      const aEnded = new Date(a.closing_date) < now;
+      const bEnded = new Date(b.closing_date) < now;
+
+      if (aEnded && !bEnded) return 1;
+      if (!aEnded && bEnded) return -1;
+
+      if (sortOption === "price-asc") return a.price - b.price;
+      if (sortOption === "price-desc") return b.price - a.price;
+      if (sortOption === "brand-asc") return a.brand.localeCompare(b.brand);
+      if (sortOption === "brand-desc") return b.brand.localeCompare(a.brand);
+      if (sortOption === "time-left") return new Date(a.closing_date) - new Date(b.closing_date);
+      if (sortOption === "time-left-desc") return new Date(b.closing_date) - new Date(a.closing_date);
+
+      return 0;
+    });
 
     return filteredProducts;
   };
 
   return (
-    <Layout  notificationCount={notificationCount}
-    onAlertClick={() => setShowNotifications(true)}>
+    <Layout
+      notificationCount={notificationCount}
+      onAlertClick={() => setShowNotifications(true)}
+    >
       <div className="product-container">
         <h1 className="product-title">JustBIDit</h1>
-
-        {/* Search + Filter + Sort */}
         <div className="search-sort-bar">
           <input
             type="text"
@@ -143,56 +176,60 @@ function ProductList() {
             className="search-input"
           />
 
-          <div>
-            <button onClick={() => setFiltersOpen(!filtersOpen)} className="filters-button">
-              Filters {filtersOpen ? "▲" : "▼"}
-            </button>
+          <button onClick={() => setFiltersOpen(!filtersOpen)} className="filters-button">
+            Filters {filtersOpen ? "▲" : "▼"}
+          </button>
 
-            {filtersOpen && (
-              <div className="filters-dropdown">
-                {["brand", "color", "storage"].map((category) => (
-                  <div key={category} className="filter-category">
-                    <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
-                    {Array.from(new Set(products.map((p) => p[category]))).map((val, idx) => (
-                      <div key={idx} className="filter-option">
-                        <input
-                          type="checkbox"
-                          id={`${category}-${idx}`}
-                          value={val}
-                          checked={
-                            category === "brand"
-                              ? brandFilter.includes(val)
-                              : category === "color"
-                                ? colorFilter.includes(val)
-                                : storageFilter.includes(val)
-                          }
-                          onChange={(e) => handleCheckboxChange(e, category)}
-                        />
-                        <label htmlFor={`${category}-${idx}`}>{val}</label>
-                      </div>
-                    ))}
-                  </div>
-                ))}
-                <button onClick={handleClearFilters} className="clear-filters-button">
-                  Clear Filters
-                </button>
-              </div>
-            )}
-          </div>
+          {filtersOpen && (
+            <div className="filters-dropdown">
+              {["brand", "color", "storage"].map((category) => (
+                <div key={category} className="filter-category">
+                  <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
+                  {Array.from(new Set(products.map((p) => p[category]))).map((val, idx) => (
+                    <div key={idx} className="filter-option">
+                      <input
+                        type="checkbox"
+                        id={`${category}-${idx}`}
+                        value={val}
+                        checked={
+                          category === "brand"
+                            ? brandFilter.includes(val)
+                            : category === "color"
+                            ? colorFilter.includes(val)
+                            : storageFilter.includes(val)
+                        }
+                        onChange={(e) => handleCheckboxChange(e, category)}
+                      />
+                      <label htmlFor={`${category}-${idx}`}>{val}</label>
+                    </div>
+                  ))}
+                </div>
+              ))}
+              <button onClick={handleClearFilters} className="clear-filters-button">
+                Clear Filters
+              </button>
+            </div>
+          )}
 
           <div className="sort-bar">
             <label htmlFor="sort" className="sort-label">Sort by:</label>
-            <select id="sort" value={sortOption} onChange={handleSortChange} className="sort-select">
+            <select
+              id="sort"
+              value={sortOption}
+              onChange={handleSortChange}
+              className="sort-select"
+            >
               <option value="">-- Select --</option>
               <option value="price-asc">Price: Low to High</option>
               <option value="price-desc">Price: High to Low</option>
               <option value="brand-asc">Brand: A to Z</option>
               <option value="brand-desc">Brand: Z to A</option>
+              <option value="time-left">Time: Least to Most</option>
+              <option value="time-left-desc">Time: Most to Least</option>
             </select>
           </div>
         </div>
 
-        {/* Products Grid */}
         {getFilteredAndSortedProducts().length > 0 ? (
           <div className="product-grid">
             {getFilteredAndSortedProducts().map((product) => {
@@ -234,7 +271,7 @@ function ProductList() {
             <h3>Notifications</h3>
             <button className="close-btn" onClick={() => setShowNotifications(false)}>×</button>
             <ul>
-              {notifications.map(n => (
+              {notifications.map((n) => (
                 <li key={n.id}>
                   <p>{n.message}</p>
                   <small>{n.created_at}</small>
@@ -242,6 +279,9 @@ function ProductList() {
               ))}
             </ul>
           </div>
+          <button onClick={handleClearNotifications} className="clear-button">
+            Clear All
+          </button>
         </div>
       )}
     </Layout>

@@ -6,20 +6,45 @@
   height: 100vh;
 }
 
-.rep-header {
-  background: linear-gradient(to bottom right, #0058A3, #0079c1);
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-}
 
 .rep-header-title {
   display: flex;
   align-items: baseline;
   gap: 1rem;
 }
+
+.rep-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to bottom right, #0058A3, #0079c1);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  z-index: 1001;
+}
+
+.header-user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-icon {
+  font-size: 22px;
+  color: white;
+}
+
+.user-name {
+  font-weight: bold;
+  font-size: 15px;
+  color: white;
+}
+
 
 .ikea-logo {
   font-size: 1.8rem;

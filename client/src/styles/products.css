@@ -6,8 +6,10 @@
   
   .sidebar {
     position: fixed;
+    top: 60px; /* height of header */
+    left: 0;
     width: 200px;
-    height: 100vh;
+    height: calc(100vh - 60px);
     background-color: #0058a3;
     color: white;
     display: flex;
@@ -15,7 +17,14 @@
     padding: 2rem 1rem;
     box-sizing: border-box;
     box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.256);
-      
+  }
+  
+  .main-content {
+    margin-left: 200px;
+    margin-top: 60px; /* to avoid header */
+    padding: 2rem;
+    background-color: #fefefe;
+    flex: 1;
   }
   
   .sidebar-title {
@@ -62,7 +71,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 20px;
     gap: 10px;
   }

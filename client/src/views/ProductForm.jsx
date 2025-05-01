@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import "../styles/ProductForm.css"; // ✅ Import the CSS
+import React, { useEffect, useState } from "react";
+import Layout from "./layout";
+import "../styles/ProductForm.css";
 
 function ProductForm() {
   const [formData, setFormData] = useState({
@@ -17,6 +18,22 @@ function ProductForm() {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
+
+  const [notifications, setNotifications] = useState([]);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      fetch(`http://localhost:8000/api/notifications?user_id=${userId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setNotifications(data);
+          setNotificationCount(data.length);
+        });
+    }
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -46,7 +63,6 @@ function ProductForm() {
       if (response.ok) {
         setSuccessMessage("✅ Product submitted successfully!");
         console.log("✅ Success:", result);
-        // Reset form after successful submission
         setFormData({
           name: "",
           price: "",
@@ -60,7 +76,6 @@ function ProductForm() {
         });
         setImage(null);
         setPreview(null);
-
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
         alert("❌ Server error: " + result.error);
@@ -87,59 +102,77 @@ function ProductForm() {
   );
 
   return (
-    <div className="product-form-container">
-      <h2 className="form-title">Enter Product Details</h2>
+    <Layout
+      notificationCount={notificationCount}
+      onAlertClick={() => setShowNotifications(true)}
+    >
+      <div className="product-form-container">
+        <h2 className="form-title">Enter Product Details</h2>
 
-      {successMessage && <div className="success-toast">{successMessage}</div>}
+        {successMessage && <div className="success-toast">{successMessage}</div>}
 
-      <form onSubmit={handleSubmit}>
-        {formField("Name", "name", "text", "Enter Product Name")}
-        {formField("Price", "price", "number", "Enter Price (in USD 💵)")}
-        {formField("Brand", "brand", "text", "Enter Brand (e.g. Apple, Samsung)")}
-        {formField("Storage", "storage", "text", "Enter Storage (e.g. 128GB)")}
-        {formField("RAM", "ram", "text", "Enter RAM (e.g. 8GB)")}
-        {formField("Color", "color", "text", "Enter Color (e.g. Black, White)")}
-        {formField("Screen Size", "screenSize", "text", "Enter Screen Size (e.g. 6.5 inches)")}
-        {formField("Reserve Price", "reservePrice", "number", "Enter Reserve Price (in USD 💵)")}
+        <form onSubmit={handleSubmit}>
+          {formField("Name", "name", "text", "Enter Product Name")}
+          {formField("Price", "price", "number", "Enter Price (in USD 💵)")}
+          {formField("Brand", "brand", "text", "Enter Brand (e.g. Apple, Samsung)")}
+          {formField("Storage", "storage", "text", "Enter Storage (e.g. 128GB)")}
+          {formField("RAM", "ram", "text", "Enter RAM (e.g. 8GB)")}
+          {formField("Color", "color", "text", "Enter Color (e.g. Black, White)")}
+          {formField("Screen Size", "screenSize", "text", "Enter Screen Size (e.g. 6.5 inches)")}
+          {formField("Reserve Price", "reservePrice", "number", "Enter Reserve Price (in USD 💵)")}
 
-        <div className="form-field">
-          <label>Closing Date:</label>
-          <input
-            type="datetime-local"
-            name="closingDate"
-            value={formData.closingDate}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-field">
-          <label>Product Image:</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            required
-          />
-        </div>
-
-        {preview && (
-          <div className="preview-container">
-            <strong>Image Preview:</strong>
-            <br />
-            <img
-              src={preview}
-              alt="Preview"
-              className="preview-image"
+          <div className="form-field">
+            <label>Closing Date:</label>
+            <input
+              type="datetime-local"
+              name="closingDate"
+              value={formData.closingDate}
+              onChange={handleChange}
+              required
             />
           </div>
-        )}
 
-        <button type="submit" className="submit-button">
-          Submit
-        </button>
-      </form>
-    </div>
+          <div className="form-field">
+            <label>Product Image:</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              required
+            />
+          </div>
+
+          {preview && (
+            <div className="preview-container">
+              <strong>Image Preview:</strong>
+              <br />
+              <img src={preview} alt="Preview" className="preview-image" />
+            </div>
+          )}
+
+          <button type="submit" className="submit-button">
+            Submit
+          </button>
+        </form>
+      </div>
+
+      {showNotifications && (
+        <div className="notification-popup">
+          <div className="notification-popup-content">
+            <h3>Notifications</h3>
+            <button className="close-btn" onClick={() => setShowNotifications(false)}>×</button>
+            <ul>
+              {notifications.map((n) => (
+                <li key={n.id}>
+                  <p>{n.message}</p>
+                  <small>{n.created_at}</small>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+    </Layout>
   );
 }
 

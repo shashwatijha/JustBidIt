@@ -37,16 +37,29 @@ function Layout({ children, notificationCount = 0, onAlertClick = () => { } }) {
             <div className="layout-container">
                 <nav className="sidebar">
                     <ul className="sidebar-menu">
-                        <li><a href="/products" className={location.pathname === "/products" ? "active-link" : ""}>Home</a></li>
-                        <li><a href="/create" className={location.pathname === "/create" ? "active-link" : ""}>Sell a Product</a></li>
-                        <li><a href="#">My Bids</a></li>
-                        <li className="sidebar-alert" onClick={onAlertClick}>
-                            <span>🔔 Alert</span>
+                        <li>
+                            <a href="/products" className={location.pathname === "/products" ? "active-link" : ""}>
+                                Home
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/create" className={location.pathname === "/create" ? "active-link" : ""}>
+                                Sell a Product
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/my-bids" className={location.pathname === "/my-bids" ? "active-link" : ""}>
+                                My Bids
+                            </a>
+                        </li>
+                        <li className="sidebar-alert" onClick={onAlertClick} role="button" tabIndex={0}>
+                            <span>🔔 Alerts</span>
                             {notificationCount > 0 && (
                                 <span className="notification-count">{notificationCount}</span>
                             )}
                         </li>
                     </ul>
+
                 </nav>
 
                 <div className="main-content">

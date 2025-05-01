@@ -14,7 +14,18 @@ class Bid(db.Model):
     auto_bid = db.Column(db.Boolean, default=False)
     max_limit = db.Column(db.Float)
     increment = db.Column(db.Float)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+
+class BidHistory(db.Model):
+    __tablename__ = 'bid_history'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
+    bid_amount = db.Column(db.Float)
+    auto_bid = db.Column(db.Boolean)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+
 
 @bid_bp.route('/api/bid', methods=['POST'])
 def place_bid():
@@ -44,21 +55,24 @@ def handle_bidding(product_id):
         print(f"[ERROR] Product ID {product_id} not found.")
         return
 
-    auto_bids = Bid.query.filter_by(product_id=product_id, auto_bid=True)
-    auto_bids = auto_bids.order_by(Bid.max_limit.desc()).limit(2).all()
-
-    top_manual = Bid.query.filter_by(product_id=product_id, auto_bid=False)
-    top_manual = top_manual.order_by(Bid.bid_amount.desc()).first()
+    auto_bids = Bid.query.filter_by(product_id=product_id, auto_bid=True).order_by(Bid.max_limit.desc()).limit(2).all()
+    top_manual = Bid.query.filter_by(product_id=product_id, auto_bid=False).order_by(Bid.bid_amount.desc()).first()
 
     if not auto_bids and top_manual:
         product.bid_price = top_manual.bid_amount
         product.user_id = top_manual.user_id
+
+        db.session.add(BidHistory(
+            product_id=product.id,
+            user_id=top_manual.user_id,
+            bid_amount=top_manual.bid_amount,
+            auto_bid=False,
+            created_at=datetime.utcnow()
+        ))
         db.session.commit()
-        print(f"[INFO] Manual-only: User {top_manual.user_id} leads product {product_id} @ ${top_manual.bid_amount}")
         return
 
     if not auto_bids:
-        print("[INFO] No auto-bidders. Skipping.")
         return
 
     top_auto = auto_bids[0]
@@ -71,20 +85,43 @@ def handle_bidding(product_id):
         second_limit = auto_bids[1].max_limit
         while current_price + increment <= second_limit and current_price + increment <= max_limit:
             current_price += increment
+            db.session.add(BidHistory(
+                product_id=product.id,
+                user_id=current_user_id,
+                bid_amount=current_price,
+                auto_bid=True,
+                created_at=datetime.utcnow()
+            ))
 
-    if top_manual and top_manual.bid_amount > current_price:
-        if top_manual.bid_amount < max_limit:
-            while current_price + increment <= top_manual.bid_amount and current_price + increment <= max_limit:
-                current_price += increment
+    if top_manual and top_manual.bid_amount >= current_price:
+        while current_price + increment <= max_limit and current_price <= top_manual.bid_amount:
+            current_price += increment
+            db.session.add(BidHistory(
+                product_id=product.id,
+                user_id=current_user_id,
+                bid_amount=current_price,
+                auto_bid=True,
+                created_at=datetime.now()
+            ))
+
+        if current_price > top_manual.bid_amount:
             current_user_id = top_auto.user_id
         else:
             current_user_id = top_manual.user_id
             current_price = top_manual.bid_amount
+            db.session.add(BidHistory(
+                product_id=product.id,
+                user_id=current_user_id,
+                bid_amount=current_price,
+                auto_bid=False,
+                created_at=datetime.now()
+            ))
 
     product.bid_price = current_price
-    product.user_id = current_user_id 
+    product.user_id = current_user_id
     db.session.commit()
-    print(f"[INFO] Bid processed. Product {product_id} → ${current_price} (Lead: User {current_user_id})")
+    #print(f"[INFO] Final Bid: Product {product_id} → ${current_price} (Lead: User {current_user_id})")
+
 
 @bid_bp.route('/api/bids/user/<int:user_id>', methods=['GET'])
 def get_user_bids(user_id):
@@ -100,4 +137,15 @@ def get_user_bids(user_id):
         "increment": b.increment,
         "closing_date": p.closing_date.strftime("%Y-%m-%dT%H:%M:%S") if p.closing_date else None
     } for b, p in bids]
+    return jsonify(result), 200
+
+@bid_bp.route('/api/bid-history/<int:product_id>', methods=['GET'])
+def get_bid_history(product_id):
+    bids = BidHistory.query.filter_by(product_id=product_id).order_by(BidHistory.created_at.asc()).all()
+    result = [{
+        "user_id": bid.user_id,
+        "bid_amount": bid.bid_amount,
+        "auto_bid": bid.auto_bid,
+        "created_at": bid.created_at.strftime("%Y-%m-%d %H:%M:%S")
+    } for bid in bids]
     return jsonify(result), 200

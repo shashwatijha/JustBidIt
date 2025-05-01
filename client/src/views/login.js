@@ -27,6 +27,7 @@ function Login() {
       const data = await response.json();
       if (response.ok) {
         setMsg(`Welcome, ${data.user.username}!`);
+        localStorage.setItem("userId", data.user.id);
         navigate('/products');
       } else {
         setMsg(data.message || "Login failed");

@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-const convertToUSD = (inr) => {
-    const rate = 0.012; // Example: ₹1 = $0.012
-    return (inr * rate).toFixed(2);
-  };
-  
 function BidForm() {
   const [searchParams] = useSearchParams();
   const productId = searchParams.get("id");
@@ -20,33 +15,33 @@ function BidForm() {
 
     const payload = {
       productId,
+      userId: parseInt(localStorage.getItem("userId")), // ✅ real logged-in user
       bidAmount,
       autoBid,
       maxLimit: autoBid ? maxLimit : null,
       increment: autoBid ? increment : null
     };
+    
 
     fetch("http://localhost:8000/api/bid", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.message) {
+          alert("Bid submitted successfully!");
+        } else {
+          alert("Error: " + data.error);
+        }
       })
-        .then(res => res.json())
-        .then(data => {
-          if (data.message) {
-            alert(" Bid submitted successfully!");
-          } else {
-            alert(" Error: " + data.error);
-          }
-        })
-        .catch(err => {
-          console.error("Network error:", err);
-          alert(" Network error. Check console.");
-        });
-      
-    // alert("Bid submitted! (Check console for now)");
+      .catch(err => {
+        console.error("Network error:", err);
+        alert("Network error. Check console.");
+      });
   };
 
   // ✨ Helper component for clean label-input pairs
@@ -81,14 +76,8 @@ function BidForm() {
       <h2 style={{ textAlign: "center", marginBottom: "24px" }}>Place Your Bid</h2>
 
       <form onSubmit={handleSubmit}>
-        {formGroup("Enter your bid amount :", bidAmount, setBidAmount)}
-        {bidAmount && (
-        <p style={{ marginTop: "-10px", marginBottom: "16px", color: "#555", fontStyle: "italic" }}>
-        ≈ ${convertToUSD(bidAmount)} USD
-        </p>
-        )}
-
-
+        {formGroup("Enter your bid amount (USD $):", bidAmount, setBidAmount)}
+        
         <div style={{ display: "flex", alignItems: "center", marginBottom: "16px" }}>
           <input
             type="checkbox"
@@ -102,8 +91,8 @@ function BidForm() {
 
         {autoBid && (
           <>
-            {formGroup("Set maximum bid limit :", maxLimit, setMaxLimit)}
-            {formGroup("Set bid increment :", increment, setIncrement)}
+            {formGroup("Set maximum bid limit (USD $):", maxLimit, setMaxLimit)}
+            {formGroup("Set bid increment (USD $):", increment, setIncrement)}
           </>
         )}
 
@@ -129,3 +118,4 @@ function BidForm() {
 }
 
 export default BidForm;
+

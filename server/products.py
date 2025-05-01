@@ -118,7 +118,7 @@ def get_product_by_id():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-from datetime import datetime
+
 
 # @product_bp.route('/api/winner', methods=['GET'])
 # def get_auction_winner():

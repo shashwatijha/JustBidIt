@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 
-
 function ProductForm() {
   const [formData, setFormData] = useState({
     name: "",
@@ -16,6 +15,7 @@ function ProductForm() {
 
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(""); // 🔵 for toast
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,22 +29,39 @@ function ProductForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => data.append(key, value));
     data.append("productImage", image);
-  
+
     try {
       const response = await fetch("http://localhost:8000/api/auctions", {
         method: "POST",
         body: data,
       });
-  
+
       const result = await response.json();
-  
+
       if (response.ok) {
-        alert("Product submitted successfully!");
+        setSuccessMessage("✅ Product submitted successfully!");
         console.log("✅ Success:", result);
+        // Reset form after successful submission
+        setFormData({
+          name: "",
+          price: "",
+          brand: "",
+          storage: "",
+          ram: "",
+          color: "",
+          screenSize: "",
+          reservePrice: "",
+          closingDate: "",
+        });
+        setImage(null);
+        setPreview(null);
+
+        // Clear message after few seconds
+        setTimeout(() => setSuccessMessage(""), 3000);
       } else {
         alert("❌ Server error: " + result.error);
         console.error("Server error:", result);
@@ -54,7 +71,6 @@ function ProductForm() {
       alert("Network error occurred while submitting.");
     }
   };
-  
 
   const formField = (label, name, type = "text", placeholder = "") => (
     <div style={{ display: "flex", flexDirection: "column", marginBottom: "12px" }}>
@@ -63,6 +79,7 @@ function ProductForm() {
         type={type}
         name={name}
         placeholder={placeholder}
+        value={formData[name]} // bind value
         onChange={handleChange}
         required
         style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
@@ -73,21 +90,39 @@ function ProductForm() {
   return (
     <div style={{ maxWidth: "500px", margin: "auto", padding: "20px" }}>
       <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Enter Product Details</h2>
+
+      {/* 🔵 Success Toast */}
+      {successMessage && (
+        <div style={{
+          backgroundColor: "#d4edda",
+          padding: "12px",
+          borderRadius: "6px",
+          color: "#155724",
+          marginBottom: "20px",
+          textAlign: "center",
+          fontWeight: "bold",
+          boxShadow: "0 4px 8px rgba(0,0,0,0.1)"
+        }}>
+          {successMessage}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit}>
         {formField("Name", "name", "text", "Enter Product Name")}
-        {formField("Price", "price", "number", "Enter Price (e.g. 499.99)")}
+        {formField("Price", "price", "number", "Enter Price (in USD 💵)")}
         {formField("Brand", "brand", "text", "Enter Brand (e.g. Apple, Samsung)")}
         {formField("Storage", "storage", "text", "Enter Storage (e.g. 128GB)")}
         {formField("Ram", "ram", "text", "Enter RAM (e.g. 8GB)")}
         {formField("Color", "color", "text", "Enter Color (e.g. Black, White)")}
         {formField("Screen Size", "screenSize", "text", "Enter Screen Size (e.g. 6.5 inches)")}
-        {formField("Reserve Price", "reservePrice", "number", "Enter Reserve Price")}
+        {formField("Reserve Price", "reservePrice", "number", "Enter Reserve Price (in USD 💵)")}
 
         <div style={{ display: "flex", flexDirection: "column", marginBottom: "12px" }}>
           <label style={{ fontWeight: "bold", marginBottom: "5px" }}>Closing Date:</label>
           <input
             type="datetime-local"
             name="closingDate"
+            value={formData.closingDate}
             onChange={handleChange}
             required
             style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
@@ -127,7 +162,8 @@ function ProductForm() {
             border: "none",
             borderRadius: "4px",
             fontWeight: "bold",
-            cursor: "pointer"
+            cursor: "pointer",
+            fontSize: "16px"
           }}
         >
           Submit

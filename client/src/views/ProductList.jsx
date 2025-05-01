@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-
-
-
-// 💵 Conversion helper
-const convertToUSD = (inr) => {
-  const conversionRate = 0.012; // You can change this to current rate
-  return (inr * conversionRate).toFixed(2);
-};
-
-
 function ProductList() {
   const [products, setProducts] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
@@ -22,7 +12,7 @@ function ProductList() {
   }, []);
 
   const handleCheckboxChange = (id) => {
-    setSelectedId(id); // single selection, for multiple use an array
+    setSelectedId(id); // single selection
   };
 
   const handleView = () => {
@@ -63,8 +53,7 @@ function ProductList() {
           <div>
             <h4>{product.name}</h4>
             <p><strong>Brand:</strong> {product.brand}</p>
-            <p><strong>Price:</strong> ${convertToUSD(product.price)}</p>
-
+            <p><strong>Price:</strong> ${product.price}</p> {/* 💵 Directly showing dollars */}
           </div>
         </div>
       ))}

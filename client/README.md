@@ -68,3 +68,16 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+### Tables
+
+use aos;
+CREATE TABLE notifications (
+ id INT AUTO_INCREMENT PRIMARY KEY,
+user_id INT NOT NULL,
+message TEXT NOT NULL,
+type VARCHAR(50),  
+created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+ );
+

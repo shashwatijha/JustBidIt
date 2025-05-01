@@ -74,12 +74,12 @@ def handle_bidding(product_id):
                 current_price = manual_price
                 current_user_id = manual_id
 
-    if Product.bid_price != current_price :
-        create_notification(
-        user_id=Product.user_id,
-        message="Your auto-bid limit has been exceeded.",
-        notif_type='auto_bid_limit'
-        )
+    # if Product.bid_price != current_price :
+    #     create_notification(
+    #     user_id=Product.user_id,
+    #     message="Your auto-bid limit has been exceeded.",
+    #     notif_type='auto_bid_limit'
+    #     )
     Product.query.filter(Product.id==product_id).update({Product.user_id:current_user_id,Product.bid_price:current_price})
 
     db.session.commit()

@@ -166,7 +166,6 @@ function ProductList() {
       onAlertClick={() => setShowNotifications(true)}
     >
       <div className="product-container">
-        <h1 className="product-title">JustBIDit</h1>
         <div className="search-sort-bar">
           <input
             type="text"
@@ -195,8 +194,8 @@ function ProductList() {
                           category === "brand"
                             ? brandFilter.includes(val)
                             : category === "color"
-                            ? colorFilter.includes(val)
-                            : storageFilter.includes(val)
+                              ? colorFilter.includes(val)
+                              : storageFilter.includes(val)
                         }
                         onChange={(e) => handleCheckboxChange(e, category)}
                       />

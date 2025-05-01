@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import "../styles/ProductDetail.css"; 
 
 function ProductDetail() {
@@ -6,6 +7,7 @@ function ProductDetail() {
 
   const query = new URLSearchParams(window.location.search);
   const productId = query.get("id");
+
 
   useEffect(() => {
     if (productId) {

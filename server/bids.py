@@ -85,3 +85,19 @@ def handle_bidding(product_id):
     product.user_id = current_user_id 
     db.session.commit()
     print(f"[INFO] Bid processed. Product {product_id} → ${current_price} (Lead: User {current_user_id})")
+
+@bid_bp.route('/api/bids/user/<int:user_id>', methods=['GET'])
+def get_user_bids(user_id):
+    bids = db.session.query(Bid, Product).join(Product, Bid.product_id == Product.id, isouter=True).filter(Bid.user_id == user_id).all()
+    result = [{
+        "product_name": p.name,
+        "brand": p.brand,
+        "image_url": p.image_filename,
+        "bid_amount": b.bid_amount,
+        "created_at": b.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+        "auto_bid": b.auto_bid,
+        "max_limit": b.max_limit,
+        "increment": b.increment,
+        "closing_date": p.closing_date.strftime("%Y-%m-%dT%H:%M:%S") if p.closing_date else None
+    } for b, p in bids]
+    return jsonify(result), 200

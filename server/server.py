@@ -57,15 +57,12 @@ def check_ended_auctions():
 
         for product in ended_products:
 
-            # Get highest bid for the product
-            winning_bid = Bid.query.filter_by(product_id=product.id)\
-                .order_by(Bid.bid_amount.desc()).first()
+            winner_id = product.user_id
+            bid_amount = product.bid_price
 
-            if not winning_bid:
-                print(f"[SKIP] No bids found for Product ID {product.id}")
+            if not winner_id:
+                print(f"[SKIP] No winner assigned for Product ID {product.id}")
                 continue
-
-            winner_id = winning_bid.user_id
 
             # Create notification for the winner
             create_notification(
@@ -76,10 +73,8 @@ def check_ended_auctions():
 
             # Update product status
             product.winner_notified = True
-            product.user_id = winner_id  # Only if winner_id field exists
-            product.bid_price = winning_bid.bid_amount
+            print(f"[NOTIFIED] User {winner_id} won {product.name} for ${bid_amount}")
 
-            print(f"[NOTIFIED] User {winner_id} won {product.name} for ${winning_bid.bid_amount}")
 
         db.session.commit()
 

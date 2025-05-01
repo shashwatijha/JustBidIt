@@ -9,6 +9,7 @@ from bids import bid_bp, Bid
 from admin import admin_bp 
 from smart_login import smart_login_bp
 from support import support_bp
+from notifications import notification_bp
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from notifications import create_notification, Notification
@@ -18,7 +19,12 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:@localhost:3306/aos'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:mysql@localhost:3306/aos'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:@localhost:3306/aos'
+
+
+
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -29,6 +35,7 @@ app.register_blueprint(bid_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(smart_login_bp)
 app.register_blueprint(support_bp)
+app.register_blueprint(notification_bp)
 
 
 @app.route('/uploads/<path:filename>')
@@ -47,7 +54,9 @@ def check_ended_auctions():
 
         print(f"[INFO] Found {len(ended_products)} ended products eligible for notification")
 
+
         for product in ended_products:
+
             # Get highest bid for the product
             winning_bid = Bid.query.filter_by(product_id=product.id)\
                 .order_by(Bid.bid_amount.desc()).first()

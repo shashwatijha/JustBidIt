@@ -175,40 +175,42 @@ function ProductList() {
             className="search-input"
           />
 
-          <button onClick={() => setFiltersOpen(!filtersOpen)} className="filters-button">
-            Filters {filtersOpen ? "▲" : "▼"}
-          </button>
+          <div className="filters-wrapper">
+            <button onClick={() => setFiltersOpen(!filtersOpen)} className="filters-button">
+              Filters {filtersOpen ? "▲" : "▼"}
+            </button>
 
-          {filtersOpen && (
-            <div className="filters-dropdown">
-              {["brand", "color", "storage"].map((category) => (
-                <div key={category} className="filter-category">
-                  <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
-                  {Array.from(new Set(products.map((p) => p[category]))).map((val, idx) => (
-                    <div key={idx} className="filter-option">
-                      <input
-                        type="checkbox"
-                        id={`${category}-${idx}`}
-                        value={val}
-                        checked={
-                          category === "brand"
-                            ? brandFilter.includes(val)
-                            : category === "color"
-                              ? colorFilter.includes(val)
-                              : storageFilter.includes(val)
-                        }
-                        onChange={(e) => handleCheckboxChange(e, category)}
-                      />
-                      <label htmlFor={`${category}-${idx}`}>{val}</label>
-                    </div>
-                  ))}
-                </div>
-              ))}
-              <button onClick={handleClearFilters} className="clear-filters-button">
-                Clear Filters
-              </button>
-            </div>
-          )}
+            {filtersOpen && (
+              <div className="filters-dropdown">
+                {["brand", "color", "storage"].map((category) => (
+                  <div key={category} className="filter-category">
+                    <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
+                    {Array.from(new Set(products.map((p) => p[category]))).map((val, idx) => (
+                      <div key={idx} className="filter-option">
+                        <input
+                          type="checkbox"
+                          id={`${category}-${idx}`}
+                          value={val}
+                          checked={
+                            category === "brand"
+                              ? brandFilter.includes(val)
+                              : category === "color"
+                                ? colorFilter.includes(val)
+                                : storageFilter.includes(val)
+                          }
+                          onChange={(e) => handleCheckboxChange(e, category)}
+                        />
+                        <label htmlFor={`${category}-${idx}`}>{val}</label>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+                <button onClick={handleClearFilters} className="clear-filters-button">
+                  Clear Filters
+                </button>
+              </div>
+            )}
+          </div>
 
           <div className="sort-bar">
             <label htmlFor="sort" className="sort-label">Sort by:</label>

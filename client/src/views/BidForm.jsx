@@ -13,16 +13,22 @@ function BidForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+  
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      alert("Please log in to place a bid.");
+      return;
+    }
+  
     const payload = {
       productId,
-      userId: parseInt(localStorage.getItem("userId")),
+      userId: parseInt(userId),
       bidAmount,
       autoBid,
       maxLimit: autoBid ? maxLimit : null,
       increment: autoBid ? increment : null
     };
-
+  
     fetch("http://localhost:8000/api/bid", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -41,6 +47,7 @@ function BidForm() {
         alert("Network error. Check console.");
       });
   };
+  
 
   const formGroup = (label, value, setter, type = "number", required = true) => (
     <div className="form-field">

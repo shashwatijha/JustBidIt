@@ -7,6 +7,16 @@ function ProductDetail() {
 
   const query = new URLSearchParams(window.location.search);
   const productId = query.get("id");
+  const [showHistory, setShowHistory] = useState(false);
+  const [history, setHistory] = useState([]);
+
+const fetchHistory = async () => {
+  const res = await fetch(`http://localhost:8000/api/bid-history/${productId}`);
+  const data = await res.json();
+  setHistory(data);
+  setShowHistory(true);
+};
+
 
 
   useEffect(() => {
@@ -57,7 +67,26 @@ function ProductDetail() {
           >
             Place a Bid
           </button>
+          <button onClick={fetchHistory} className="place-bid-button">
+            View Bid History
+          </button>
         </div>
+
+        {showHistory && (
+        <div className="history-popup" >
+          <h3 className="history-popup h3">Bid History</h3>
+          <ul className="history-popup ul">
+            {history.map((entry, idx) => (
+              <li key={idx} className="history-popup li">
+                <strong>${entry.bid_amount}</strong> by User {entry.user_id} ({entry.auto_bid ? "Auto" : "Manual"}) <br />
+                <small>{entry.created_at}</small>
+              </li>
+            ))}
+          </ul>
+          <button onClick={() => setShowHistory(false)} className="history-popup button">Close</button>
+        </div>
+      )}
+
       </div>
     </>
   );

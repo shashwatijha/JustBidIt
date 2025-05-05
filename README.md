@@ -3,7 +3,7 @@
 Welcome to **Just Bid It**, an online auction platform inspired by systems like eBay. Users can create accounts, post items for sale, bid on items, and manage auctions in real-time.
 
 >  **Want to know what’s implemented?**  
-> Check out the [Issues section](https://github.com/shashwatijha/oas/issues) or the included feature checklist to see the list of developed and planned features.
+> Check out the [Issues section](https://github.com/shashwatijha/oas/issues) (filter:  *is:issue state:closed* )or the included feature checklist to see the list of developed and planned features.
 
 ---
 

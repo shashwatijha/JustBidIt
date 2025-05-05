@@ -108,6 +108,7 @@
 
   .country-select {
     margin-bottom: 15px;
+    min-width: -webkit-fill-available;
   }
   
   .country-select .react-select__control {

@@ -70,7 +70,7 @@ function Login() {
           </div>
 
           <button type="submit" className="login-button">Continue</button>
-          <div className="divider" />
+          <div className="divider"/>
           <div className="loginsignup-container">
             <p className="signup-text">
               Don’t have an account yet? <Link to="/signup" className="create-link">Create one.</Link>

@@ -58,6 +58,11 @@ function Layout({ children, notificationCount = 0, onAlertClick = () => { } }) {
                                 <span className="notification-count">{notificationCount}</span>
                             )}
                         </li>
+                        <li>
+                            <a href="/faq" className={location.pathname === "/faq" ? "active-link" : ""}>
+                                FAQs
+                            </a>
+                        </li>
                     </ul>
 
                 </nav>

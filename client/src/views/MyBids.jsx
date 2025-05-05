@@ -67,7 +67,7 @@ function MyBids() {
                   className={`product-card ${!isActive ? "disabled" : ""}`}
                 >
                   <img
-                    src={bid.image_url}
+                    src={`http://localhost:8000/uploads/${bid.image_url}`}
                     alt={bid.product_name}
                     className="product-image"
                   />

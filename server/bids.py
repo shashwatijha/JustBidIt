@@ -125,8 +125,7 @@ def handle_bidding(product_id):
             )
 
     db.session.commit()
-
-
+    print(f"[INFO] Final Bid: Product {product_id} → ${current_price} (Lead: User {current_user_id})")
 @bid_bp.route('/api/bids/user/<int:user_id>', methods=['GET'])
 def get_user_bids(user_id):
     bids = db.session.query(Bid, Product).join(Product, Bid.product_id == Product.id, isouter=True).filter(Bid.user_id == user_id).all()

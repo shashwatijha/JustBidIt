@@ -11,47 +11,44 @@ Welcome to **Just Bid It**, an online auction platform inspired by systems like 
 
 ### 1. Clone the Repository
 
-```bash
-git clone https://github.com/shashwatijha/oas.git
-
 ### 2. Download MySQL Workbench
 
 Download and install it from:
 https://dev.mysql.com/downloads/workbench/
 
 ### 3. Setup Python Virtual Environment
-
+```
 cd server
 python -m venv venv
-Activate the virtual environment:
-macOS/Linux
-source venv/bin/activate
+```
 
-Windows
-.\venv\Scripts\activate
+**Activate the virtual environment:**
+macOS/Linux : `source venv/bin/activate`
+Windows : `.\venv\Scripts\activate`
 
 ### 4. Install Dependencies
 
-pip install -r requirements.txt
+`pip install -r requirements.txt`
 
 ### 5. Run the Server
-
+```
 cd server
 python server.py
-
+```
 ### 6. Run the Client
-
 Open a new terminal window:
+```
 cd client
 npm install
 npm start
+```
 
 Your application will run at: http://localhost:8000
 
 ### 7. Setup Database in MySQL Workbench
 
 Open MySQL Workbench
-Create a new database and run the createTable.sql SQL setup script
+Create a new database and run the [createTable.sql SQL](https://github.com/shashwatijha/oas/blob/main/createTable.sql) setup script
 
-Make sure to update your database connection details in app.py if needed.
+**Make sure to update your database connection details in app.py if needed.**
 

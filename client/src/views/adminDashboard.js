@@ -27,7 +27,7 @@ export default function AdminDashboard() {
     <div className="admin-dashboard-container">
       <header className="admin-header">
         <div className="admin-header-title">
-          <span className="ikea-logo">IKEA</span>
+          <span className="ikea-logo">JustBIDit</span>
           <span className="dashboard-title">Admin Dashboard</span>
         </div>
         <button onClick={handleLogout} className="ikea-logout-btn">Logout</button>

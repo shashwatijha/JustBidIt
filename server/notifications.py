@@ -55,3 +55,7 @@ def clear_notifications():
     Notification.query.filter_by(user_id=user_id).delete()
     db.session.commit()
     return jsonify({"message": "Notifications cleared"}), 200
+
+
+# create_notification(user_id, "You were outbid on Product X", "outbid")
+# create_notification(user_id, "Your auto-bid limit was exceeded", "auto_bid_limit")

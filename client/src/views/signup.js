@@ -84,7 +84,7 @@ export default function SignupForm() {
                     {accountType === "personal" ? "Create your personal account" : "Create your business account"}
                 </div>
                 <p className="signup-subtext">
-                    Get access to BuyMe's online auctions — Buy, Bid, or Sell with ease.
+                    Get access to JustBIDit's online auctions — Buy, Bid, or Sell with ease.
                 </p>
             </div>
 

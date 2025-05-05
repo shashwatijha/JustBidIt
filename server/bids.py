@@ -2,6 +2,7 @@ from flask import request, jsonify, Blueprint
 from auth import db
 from datetime import datetime
 from products import Product
+from notifications import create_notification
 bid_bp = Blueprint('bid', __name__)
 
 class Bid(db.Model):
@@ -58,81 +59,73 @@ def handle_bidding(product_id):
     auto_bids = Bid.query.filter_by(product_id=product_id, auto_bid=True).order_by(Bid.max_limit.desc()).limit(2).all()
     top_manual = Bid.query.filter_by(product_id=product_id, auto_bid=False).order_by(Bid.bid_amount.desc()).first()
 
+    current_user_id = None
+    current_price = product.bid_price or 0
+
     if not auto_bids and top_manual:
-        product.bid_price = top_manual.bid_amount
-        product.user_id = top_manual.user_id
+        current_user_id = top_manual.user_id
+        current_price = top_manual.bid_amount
+    elif auto_bids:
+        top_auto = auto_bids[0]
+        current_user_id = top_auto.user_id
+        current_price = top_auto.bid_amount
+        increment = top_auto.increment or 1
+        max_limit = top_auto.max_limit
 
-        db.session.add(BidHistory(
-            product_id=product.id,
-            user_id=top_manual.user_id,
-            bid_amount=top_manual.bid_amount,
-            auto_bid=False,
-            created_at=datetime.utcnow()
-        ))
-        db.session.commit()
+        if len(auto_bids) > 1:
+            second_limit = auto_bids[1].max_limit
+            while current_price + increment <= second_limit and current_price + increment <= max_limit:
+                current_price += increment
+
+        if top_manual and top_manual.bid_amount >= current_price:
+            while current_price + increment <= max_limit and current_price <= top_manual.bid_amount:
+                current_price += increment
+
+            if current_price > top_manual.bid_amount:
+                current_user_id = top_auto.user_id
+            else:
+                current_user_id = top_manual.user_id
+                current_price = top_manual.bid_amount
+
+    if current_user_id is None:
         return
 
-    if not auto_bids:
-        return
-
-    top_auto = auto_bids[0]
-    current_user_id = top_auto.user_id
-    current_price = top_auto.bid_amount
-    increment = top_auto.increment or 1
-    max_limit = top_auto.max_limit
-
-    if len(auto_bids) > 1:
-        second_limit = auto_bids[1].max_limit
-        while current_price + increment <= second_limit and current_price + increment <= max_limit:
-            current_price += increment
-
-            db.session.add(BidHistory(
-                product_id=product.id,
-                user_id=current_user_id,
-                bid_amount=current_price,
-                auto_bid=True,
-                created_at=datetime.utcnow()
-            ))
-
-    if top_manual and top_manual.bid_amount >= current_price:
-        while current_price + increment <= max_limit and current_price <= top_manual.bid_amount:
-            current_price += increment
-            db.session.add(BidHistory(
-                product_id=product.id,
-                user_id=current_user_id,
-                bid_amount=current_price,
-                auto_bid=True,
-                created_at=datetime.now()
-            ))
-
-
-        if current_price > top_manual.bid_amount:
-            current_user_id = top_auto.user_id
-        else:
-            current_user_id = top_manual.user_id
-            current_price = top_manual.bid_amount
-            db.session.add(BidHistory(
-                product_id=product.id,
-                user_id=current_user_id,
-                bid_amount=current_price,
-                auto_bid=False,
-                created_at=datetime.now()
-            ))
-
-    # if top_manual and top_manual.bid_amount > current_price:
-    #     if top_manual.bid_amount < max_limit:
-    #         while current_price + increment <= top_manual.bid_amount and current_price + increment <= max_limit:
-    #             current_price += increment
-    #         current_user_id = top_auto.user_id
-    #     else:
-    #         current_user_id = top_manual.user_id
-    #         current_price = top_manual.bid_amount
-
+    # Update product
     product.bid_price = current_price
     product.user_id = current_user_id
+
+    # Add to BidHistory (always for final winning state)
+    history_entry = BidHistory(
+        product_id=product.id,
+        user_id=current_user_id,
+        bid_amount=current_price,
+        auto_bid=bool(Bid.query.filter_by(product_id=product.id, user_id=current_user_id, auto_bid=True).first()),
+        created_at=datetime.now()
+    )
+    db.session.add(history_entry)
+
+    # Notify other bidders
+    previous_bidders = db.session.query(Bid.user_id).filter(
+        Bid.product_id == product.id,
+        Bid.user_id != current_user_id
+    ).distinct().all()
+
+    for (uid,) in previous_bidders:
+        if Bid.query.filter_by(product_id=product.id, user_id=uid, auto_bid=True).first():
+            create_notification(
+                user_id=uid,
+                message=f"Your auto bid max limit was exceeded on {product.name}.",
+                notif_type='auto_bid_limit_exceeded'
+            )
+        else:
+            create_notification(
+                user_id=uid,
+                message=f"You were outbid on {product.name}.",
+                notif_type='outbid'
+            )
+
     db.session.commit()
-
-
+    print(f"[INFO] Final Bid: Product {product_id} → ${current_price} (Lead: User {current_user_id})")
 @bid_bp.route('/api/bids/user/<int:user_id>', methods=['GET'])
 def get_user_bids(user_id):
     bids = db.session.query(Bid, Product).join(Product, Bid.product_id == Product.id, isouter=True).filter(Bid.user_id == user_id).all()

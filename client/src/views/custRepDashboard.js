@@ -29,7 +29,7 @@ export default function CustomerRepDashboard() {
     <div className="rep-dashboard-container">
       <header className="rep-header">
         <div className="rep-header-title">
-          <span className="ikea-logo">IKEA</span>
+          <span className="ikea-logo">JustBIDit</span>
           <span className="dashboard-title">Customer Rep Dashboard</span>
         </div>
         <button onClick={handleLogout} className="ikea-logout-btn">Logout</button>

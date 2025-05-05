@@ -1,7 +1,9 @@
+# Just Bid It – Online Auction System
 
-# OAS – Online Auction System
+Welcome to **Just Bid It**, an online auction platform inspired by systems like eBay. Users can create accounts, post items for sale, bid on items, and manage auctions in real-time.
 
-Welcome to the OAS project! This guide will help you get the project up and running on your local machine.
+>  **Want to know what’s implemented?**  
+> Check out the [Issues section](https://github.com/shashwatijha/oas/issues) or the included feature checklist to see the list of developed and planned features.
 
 ---
 
@@ -11,106 +13,45 @@ Welcome to the OAS project! This guide will help you get the project up and runn
 
 ```bash
 git clone https://github.com/shashwatijha/oas.git
-```
 
----
+### 2. Download MySQL Workbench
 
-### 2. Install Required Tools
+Download and install it from:
+https://dev.mysql.com/downloads/workbench/
 
-- [VS Code](https://code.visualstudio.com/)
-- [MySQL Workbench](https://dev.mysql.com/downloads/workbench/)
+### 3. Setup Python Virtual Environment
 
----
-
-### 3. Open the Project in VS Code
-
-```bash
-cd OAS
-code .
-```
-
----
-
-### 4. Set Up Python Virtual Environment
-
-```bash
 cd server
 python -m venv venv
-
-# Activate virtual environment:
-# macOS/Linux
+Activate the virtual environment:
+macOS/Linux
 source venv/bin/activate
 
-# Windows
+Windows
 .\venv\Scripts\activate
-```
 
----
+### 4. Install Dependencies
 
-### 5. Install Backend Dependencies, not done yet
-
-```bash
 pip install -r requirements.txt
-```
 
----
+### 5. Run the Server
 
-### 6. Run the Flask Server
-
-```bash
 cd server
 python server.py
-```
-```to run the reactjs
-    npm install
-    npm start
-```
-Server will run on: [http://localhost:8000](http://localhost:8000)
 
----
+### 6. Run the Client
 
+Open a new terminal window:
+cd client
+npm install
+npm start
 
+Your application will run at: http://localhost:8000
 
-### 7. Set Up MySQL Database
+### 7. Setup Database in MySQL Workbench
 
-- Open MySQL Workbench
-- Run the following SQL:
+Open MySQL Workbench
+Create a new database and run the createTable.sql SQL setup script
 
-```sql
-CREATE DATABASE aos;
-USE aos;
-
-CREATE TABLE users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    email VARCHAR(100) NOT NULL,
-    username VARCHAR(100) NOT NULL,
-    password VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-you may also need to update your sql connection details in app.py
-
-> You can also import a provided `schema.sql` file if available.
-
----
-
-### 8. Test Login (Optional)
-
-Use the following test credentials (if seeded):
-
-```text
-email: test@example.com
-password: test123
-```
-
----
-
-### Tips
-
-- Always pull the latest changes from `main`
-- Create a new branch for each feature
-- Open a Pull Request via GitHub UI and assign a reviewer
-- Never push directly to `main`
-
+Make sure to update your database connection details in app.py if needed.
 

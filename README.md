@@ -5,7 +5,7 @@ Welcome to **Just Bid It**, an online auction platform inspired by systems like 
 >  **Want to know what’s implemented?**  
 > Check out the [Issues section](https://github.com/shashwatijha/oas/issues) (filter:  *is:issue state:closed* )or the included feature checklist to see the list of developed and planned features.
 
-[![Watch the demo](https://img.youtube.com/vi/2yrfb0eTMiA/0.jpg)](https://youtu.be/2yrfb0eTMiA)
+Heres a demo! https://youtu.be/2yrfb0eTMiA
 
 ---
 
